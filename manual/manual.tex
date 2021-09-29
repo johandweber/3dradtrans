@@ -108,7 +108,7 @@ or
 \texttt{pdflatex manual.tex}
 three times (which is necessary for the generation of the correct citations and 
 references). The hyperlinks within this document only work in PDF files, but not 
-in Postscript of DVI files.} \item \texttt{make clean} Removes all but the 
+in Postscript or DVI files.} \item \texttt{make clean} Removes all but the 
 source files.
 \end{itemize}
 
@@ -145,7 +145,7 @@ program after it has been compiled. The test case represents a homogeneous
 H\,II region surrounding a a 40 kK dwarf star. Both the nebular and the stellar 
 metallicity corresponds to the solar value (The values for the "solar 
 metallicity" correspond to the ones in \citealt{Asplund2009}, the properties of 
-the corresponding stellar model are decribed in \citealt{Weber2015}). Simulated 
+the corresponding stellar model are described in \citealt{Weber2015}). Simulated 
 is one octant of the H\,II region. The input files are
 \begin{itemize}
 \item \texttt{input\_values}: This file contains the namelist with the  
@@ -403,7 +403,7 @@ Here \texttt{\$PATH\_TO\_BINARY} is the path, where the executable is located.
 Note that by default there is no  environment variable where the path is 
 located. So the  path has to be passed to the command line manually. 
 Alternatively it is possible to set such an environment variable in a 
-starupfile like \texttt{.bashrc}. You just have to type the name of the program, 
+startup file like \texttt{.bashrc}. You just have to type the name of the program, 
 if the name of the directory, where the binary of \texttt{occup\_3d\_ext} is 
 located is added to the \texttt{\$PATH} (UNIX-like operating systems) or 
 \texttt{\%Path} (Windows) environment variable. 
@@ -519,7 +519,7 @@ namelist with the input parameters.
  \item \textit{description:~} The name of the file containing the polynomial
   coefficients. The order of the cells corresponds to the one of the IFrIT
   uniform scalar data text files.
-  Each entry contains of 4 colums.
+  Each entry contains of 4 columns.
   The formula for the heating rate per volume unit is
   \begin{equation}
   Q=  C_1 \cdot n_\mathrm{e}^3 +C_2 \cdot n_\mathrm{e}^2 +C_3 \cdot n_\mathrm{e}
@@ -599,7 +599,7 @@ namelist with the input parameters.
  \item \textit{default value:~} 4
 % \item \textit{requires:~} \texttt{\hyperref[opt:abundreltoh]{include\_metals}=.true.}
  \item \textit{description:~} Number of considered C ions, starting with the 
- neutral stage and reaching to  the \texttt{Cions}-1 times ionzed stage.
+ neutral stage and reaching to  the \texttt{Cions}-1 times ionized stage.
 \end{itemize}
 
 
@@ -926,7 +926,7 @@ namelist with the input parameters.
  abundances of Ar is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -946,7 +946,7 @@ namelist with the input parameters.
  abundances of C is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -966,7 +966,7 @@ namelist with the input parameters.
  abundances of He is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -1001,7 +1001,7 @@ namelist with the input parameters.
  abundances of N is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -1021,7 +1021,7 @@ namelist with the input parameters.
  abundances of Ne is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -1042,7 +1042,7 @@ namelist with the input parameters.
  abundances of O is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -1062,7 +1062,7 @@ namelist with the input parameters.
  abundances of S is still occupied and the corresponding output
  files are written. The abundances of each of the considered ionization
  stages are set to $10^{-150}\,\mathrm{cm^{-3}}$. The rationale for
- this behavior is to maintain compatibility with postprocessing
+ this behavior is to maintain compatibility with post-processing
  tools. It may be changed in the future.
 % \item \textit{see also:~}
 \end{itemize}
@@ -1202,7 +1202,7 @@ considered.
  \item \textit{default value:~} 4
 % \item \textit{requires:~} \texttt{\hyperref[opt:abundreltoh]{include\_metals}=.true.}
  \item \textit{description:~} Number of considered C ions, starting with the 
- neutral stage and reaching to  the \texttt{Cions}-1 times ionzed stage.
+ neutral stage and reaching to  the \texttt{Cions}-1 times ionized stage.
 \end{itemize}
 
 
@@ -1397,7 +1397,7 @@ considered.
  \item \textit{requires:~} \texttt{\hyperref[opt:periodic]{compute\_temperature}=.true.}
  \item \textit{description:~} Computes the thermal pressure for each grid cell 
   in units of $\mathrm{dyn\,cm^{-2}}$ 
- \item \textit{caveats:~} Accurate hydrodynamical computations would require the 
+ \item \textit{caveats:~} Accurate hydrodynamic computations would require the 
   determination of the temperature and the chemical state (including metals) 
   outside the ionized region. These computations are currently not done.
 % \item \textit{see also:~}
@@ -2054,7 +2054,7 @@ ionization structure of helium and metals (and the temperature structure)
  \item \textit{requires:~}
  \item \textit{description:~}Sets the maximal $y$-index for a cell. Note that
   all indexes of the cell in the center of the volume is 0, and the  $y$ 
-  indexes range form $-\mathtt{y\_max}$ to $+-\mathtt{y\_max}$. This means that 
+  indexes range from $-\mathtt{y\_max}$ to $+-\mathtt{y\_max}$. This means that 
   the $y$-axis is divided into $2\, \mathtt{y\_max} +1$ segments (The variable 
   has the same meaning as in \texttt{occup\_3d\_ext}).
 % \item \textit{caveats:~}
@@ -2089,7 +2089,7 @@ ionization structure of helium and metals (and the temperature structure)
  \item \textit{requires:~}
  \item \textit{description:~}Sets the maximal $z$-index for a cell. Note that
   all indexes of the cell in the center of the volume is 0, and the  $z$ 
-  indexes range form $-\mathtt{z\_max}$ to $+-\mathtt{z\_max}$. This means that 
+  indexes range from $-\mathtt{z\_max}$ to $+-\mathtt{z\_max}$. This means that 
   the $z$-axis is divided into $2\, \mathtt{z\_max} +1$ segments (The variable 
   has the same meaning as in \texttt{occup\_3d\_ext}).
 % \item \textit{caveats:~}
@@ -2647,7 +2647,7 @@ ionization structure of helium and metals (and the temperature structure)
  \item \textit{requires:~} 
  \item \textit{description:~} Sets the maximal $x$-index for a cell. Note that
   all indexes of the cell in the center of the volume is 0, and the  $x$ 
-  indexes range form $-\mathtt{x\_max}$ to $+-\mathtt{x\_max}$. This means that 
+  indexes range from $-\mathtt{x\_max}$ to $+-\mathtt{x\_max}$. This means that 
   the $x$-axis is divided into $2\, \mathtt{x\_max} +1$ segments (The variable 
   has the same meaning as in \texttt{occup\_3d\_ext}).
 % \item \textit{caveats:~}
@@ -2682,7 +2682,7 @@ ionization structure of helium and metals (and the temperature structure)
  \item \textit{requires:~}
  \item \textit{description:~}Sets the maximal $y$-index for a cell. Note that
   all indexes of the cell in the center of the volume is 0, and the  $y$ 
-  indexes range form $-\mathtt{y\_max}$ to $+-\mathtt{y\_max}$. This means that 
+  indexes range from $-\mathtt{y\_max}$ to $+-\mathtt{y\_max}$. This means that 
   the $y$-axis is divided into $2\, \mathtt{y\_max} +1$ segments (The variable 
   has the same meaning as in \texttt{occup\_3d\_ext}).
 % \item \textit{caveats:~}
@@ -2717,7 +2717,7 @@ ionization structure of helium and metals (and the temperature structure)
  \item \textit{requires:~}
  \item \textit{description:~}Sets the maximal $z$-index for a cell. Note that
   all indexes of the cell in the center of the volume is 0, and the  $z$ 
-  indexes range form $-\mathtt{z\_max}$ to $+-\mathtt{z\_max}$. This means that 
+  indexes range from $-\mathtt{z\_max}$ to $+-\mathtt{z\_max}$. This means that 
   the $z$-axis is divided into $2\, \mathtt{z\_max} +1$ segments (The variable 
   has the same meaning as in \texttt{occup\_3d\_ext}).
 % \item \textit{caveats:~}
@@ -2800,7 +2800,7 @@ $y$ and $z$ is computed by
 \end{equation}
 
 Here \texttt{cutoff} is maximal density, i.e. if the formula for the density
-sructure (second argument of $\min$ in Eq.~\ref{eq:hydoptnlpowerradcutoff}) 
+structure (second argument of $\min$ in Eq.~\ref{eq:hydoptnlpowerradcutoff}) 
 leads to a  value larger than the cutoff-value it will be replaced by 
 \texttt{cutoff}.  
 $\left|\mathbf{r_{x,y,z}} - \mathbf{r_{center}} \right|$ is the
@@ -2852,7 +2852,7 @@ Here \hyperref[hydopt:xcenter]{\texttt{x\_center}},
 and \hyperref[hydopt:zcenter]{\texttt{z\_center}} have the 
 usual meaning. 
 Here \hyperref[hydopt:nhyd]{nhyd} is the number density in the cell where the 
-refence point is located. 
+reference point is located. 
 $\left|\mathbf{r_{x,y,z}} - \mathbf{r_{center}} \right|$ is the
 distance of the center of the cell with the indexes $x$, $y$ and $z$ (in 
 parsec). 
@@ -2898,10 +2898,10 @@ The number of generations is stored in the \texttt{real} variable
 \texttt{frac\_tiers.}
 The boundary conditions are periodic. This means that if the algorithm would 
 result in a position outside the simulated range in \(x_n\) dimension, it is 
-transfered inside the volume and given the position it  had if \(x_n\)-axis the 
+transferred inside the volume and given the position it  had if \(x_n\)-axis the 
 coordinate system was sifted in the direction of the particle by the length of 
 the edge. The periodic boundary conditions make sure that the overall number of 
-perticles does not depend on the positions of the selected points.  
+particles does not depend on the positions of the selected points.  
 
 The fractal contribution of a single cell can be obtained by normalizing the 
 included number \(N_{5,cell}\)  of points of the last 
@@ -3036,3 +3036,4 @@ for 12 parallel processes.}
 
 \bibliography{manual}
 \end{document}          
+s
