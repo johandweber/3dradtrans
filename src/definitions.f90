@@ -375,7 +375,6 @@ real(dp)            :: HetoH  = 1.E-12_dp,&
                        AmtoH  = 1.E-12_dp,&
                        CmtoH  = 1.E-12_dp
 
-
 !
 real(dp)            :: diffuse_threshold   = 1E-3_dp
 integer(dp)         :: diffuse_random_rays = 1
@@ -586,9 +585,7 @@ contains
 ! 
 end subroutine LOAD_PARAMETERS
 !-------------------------------------------------------------------------------
-
      
-
 end module M_definitions
 
 !-------------------------------------------------------------------------------

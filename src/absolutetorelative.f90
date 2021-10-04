@@ -1,21 +1,21 @@
 PROGRAM ABSOLUTETORELATIVE 
-
+use M_data_types
  implicit none
-  integer:: no_of_ions, argc
-  integer:: xrange, yrange, zrange, xcounter, x,y,z
-  double precision:: HeI_abs, HeII_abs, HeIII_abs, totalhelium
-  double precision:: ion1, ion2, ion3, ion4, ion5, total
-  double precision:: meandensity
+  integer(i4b):: no_of_ions, argc
+  integer(i4b):: xrange, yrange, zrange, xcounter, x,y,z
+  real(dp):: HeI_abs, HeII_abs, HeIII_abs, totalhelium
+  real(dp):: ion1, ion2, ion3, ion4, ion5, total
+  real(dp):: meandensity
   character(len=3000):: arg1,arg2
-
-  double precision :: min=-1., max=-1., mean=0.
-
+!
+  real(dp) :: min=-1._dp, max=-1._dp, mean=0._dp
+!
   argc=command_argument_count()
-
+!
   call get_command_argument(1,arg1)
-
+!
   read(arg1,*) no_of_ions
-
+!
   read(*,*) xrange, yrange, zrange
   write(*,*) xrange, yrange, zrange
 
@@ -33,8 +33,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
-  
+!  
   if (no_of_ions .eq. 3) then
      do z=1, zrange
         do y=1, yrange
@@ -49,8 +48,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
-  
+!  
   if (no_of_ions .eq. 4) then
      do z=1, zrange
         do y=1, yrange
@@ -65,7 +63,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
+!
   if (no_of_ions .eq. 5) then
      do z=1, zrange
         do y=1, yrange
@@ -81,7 +79,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
+!
   if (no_of_ions .eq. -2) then
      do z=1, zrange
         do y=1, yrange
@@ -96,8 +94,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
-  
+!  
   if (no_of_ions .eq. -3) then
      do z=1, zrange
         do y=1, yrange
@@ -112,8 +109,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
-  
+! 
   if (no_of_ions .eq. -4) then
      do z=1, zrange
         do y=1, yrange
@@ -128,7 +124,7 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
+!
   if (no_of_ions .eq. -5) then
      do z=1, zrange
         do y=1, yrange
@@ -144,9 +140,9 @@ PROGRAM ABSOLUTETORELATIVE
         end do
      end do
   end if
-
-
+!
   write(*,*) 'min :', min
   write(*,*) 'mean :', mean
   write(*,*) 'max:', max
+!  
 END PROGRAM ABSOLUTETORELATIVE

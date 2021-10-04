@@ -1,4 +1,4 @@
-program threedhydro
+PROGRAM THREEDHYDRO
   use M_data_types
   use M_natural_constants
 !
@@ -22,7 +22,6 @@ program threedhydro
 !
 ! just counter variables
   integer (i4b)            :: x,y,z
-
 !
   namelist/hydro_params/&
        mode, nhyd, nhyd_fill, nHI_fraction,&
@@ -36,7 +35,7 @@ program threedhydro
        x_center, y_center, z_center,&
        ensure_minimum,&
        ifrit_filename
-!  
+ ! 
   read(*,'(A)') full_line
   read(*,*) x_max, y_max, z_max
   allocate(grid(-x_max:+x_max, -y_max:+y_max, -z_max:+z_max))
@@ -72,8 +71,8 @@ program threedhydro
      read(full_line,*) mode, plane, x_center, y_center, z_center, nhyd, cutoff,&
                        z_0, dens_exponent
      call powerplanecutoff
-    end if
-  !
+  end if
+!  
   if (index (full_line, "SPHERE") .ne. 0) then
      read(full_line,*) mode, x_center, y_center, z_center, nhyd, radius
      call sphere
@@ -93,12 +92,11 @@ program threedhydro
 !
   if (.not. mode_set)&
        stop 'STOP: DENSITY DISTRIBUTION NOT SPECIFIED'
-
 !
   if (random_mode) then
      call random_remove
   end if
-
+!
   write(*,'(3I6)') (2*x_max+1), (2*y_max+1), (2*z_max+1)
   do z=-z_max,+z_max
      do y=-y_max,+y_max
@@ -112,187 +110,188 @@ program threedhydro
      end do
   end do
   stop
+!
 !-----------------------------------------------------------------------------
 
-  contains
+contains
 
-    subroutine homogen
-      implicit none
-      grid=nhyd
-      mode_set=.true.
-    end subroutine homogen
+  subroutine homogen
+    implicit none
+    grid=nhyd
+    mode_set=.true.
+  end subroutine homogen
   
-    subroutine fractal
-      implicit none
-      ! source code still to be added
-      mode_set=.true.
-    end subroutine fractal
+  subroutine fractal
+    implicit none
+    ! source code still to be added
+    mode_set=.true.
+  end subroutine fractal
   
-    subroutine exponentialrad
-      implicit none
-      integer(i4b):: x, y, z
-      real   ( dp):: distance 
-      do z=-z_max, +z_max
-         do y=-y_max, +y_max
-            do x=-x_max, +x_max
-               distance=sqrt(1._dp*(x-x_center)**2+(y-y_center)**2+&
-                                    (z-z_center)**2)
-               grid(x,y,z)=nhyd*exp(-distance/dens_scale)
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine exponentialrad
+  subroutine exponentialrad
+    implicit none
+    integer(i4b):: x, y, z
+    real   ( dp):: distance 
+    do z=-z_max, +z_max
+       do y=-y_max, +y_max
+          do x=-x_max, +x_max
+             distance=sqrt(1._dp*(x-x_center)**2+(y-y_center)**2+&
+                           (z-z_center)**2)
+             grid(x,y,z)=nhyd*exp(-distance/dens_scale)
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine exponentialrad
 
-    subroutine exponentialplane
-      implicit none
-      integer(i4b):: x,y,z
-      real   ( dp):: distance 
-         do z=-z_max, +z_max
-            do y=-y_max, +y_max
-               do x=-x_max, +x_max
-                  if (plane .eq. 'x' .or. plane .eq. 'X')&
-                       distance = abs(x-x_center)
-                  if (plane .eq. 'y' .or. plane .eq. 'Y')&
-                       distance = abs(y-y_center)
-                  if (plane .eq. 'z' .or. plane .eq. 'Z')&
-                       distance = abs(z-z_center)
-                  grid(x,y,z)=nhyd*exp(-distance/dens_scale)                 
-               end do
-            end do
-         end do
-         mode_set=.true.
-    end subroutine exponentialplane
+  subroutine exponentialplane
+    implicit none
+    integer(i4b):: x,y,z
+    real   ( dp):: distance 
+    do z=-z_max, +z_max
+       do y=-y_max, +y_max
+          do x=-x_max, +x_max
+             if (plane .eq. 'x' .or. plane .eq. 'X')&
+                  distance = abs(x-x_center)
+             if (plane .eq. 'y' .or. plane .eq. 'Y')&
+                  distance = abs(y-y_center)
+             if (plane .eq. 'z' .or. plane .eq. 'Z')&
+                  distance = abs(z-z_center)
+             grid(x,y,z)=nhyd*exp(-distance/dens_scale)                 
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine exponentialplane
 
-    subroutine powerradcutoff
-      implicit none
-      integer(i4b):: x,y,z
-      real   ( dp):: distance
-      do z=-z_max, +z_max
-         do y=-y_max, +y_max
-            do x=-x_max, +x_max
-               distance=sqrt(1._dp*(x-x_center)**2+(y-y_center)**2+&
-                                   (z-z_center)**2)    
-               if (x .eq. x_center .and. y .eq. y_center .and. &
-                   z .eq. z_center) then
-                  grid(x,y,z)= nhyd 
-               else
-                  if (prefact*(distance/r_0)**dens_exponent .gt. cutoff) then
-                     grid(x,y,z)=cutoff
-                  else 
-                     grid(x,y,z)= nhyd*(distance/r_0)**(-dens_exponent)
-                  end if
-               end if
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine powerradcutoff
+  subroutine powerradcutoff
+    implicit none
+    integer(i4b):: x,y,z
+    real   ( dp):: distance
+    do z=-z_max, +z_max
+       do y=-y_max, +y_max
+          do x=-x_max, +x_max
+             distance=sqrt(1._dp*(x-x_center)**2+(y-y_center)**2+&
+                           (z-z_center)**2)    
+             if (x .eq. x_center .and. y .eq. y_center .and. &
+                  z .eq. z_center) then
+                grid(x,y,z)= nhyd 
+             else
+                if (prefact*(distance/r_0)**dens_exponent .gt. cutoff) then
+                   grid(x,y,z)=cutoff
+                else 
+                   grid(x,y,z)= nhyd*(distance/r_0)**(-dens_exponent)
+                end if
+             end if
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine powerradcutoff
 
-    subroutine powerplanecutoff
-      implicit none
-      integer(i4b):: x,y,z
-      real   ( dp):: distance
-      do z=-z_max, +z_max
-         do y=-y_max, +y_max
-            do x=-x_max, +x_max
-               if (plane .eq. 'x' .or. plane .eq. 'X')&
-                    distance = abs(x-x_center)
-               if (plane .eq. 'y' .or. plane .eq. 'Y')&
-                    distance = abs(y-y_center)
-               if (plane .eq. 'z' .or. plane .eq. 'Z')&
+  subroutine powerplanecutoff
+    implicit none
+    integer(i4b):: x,y,z
+    real   ( dp):: distance
+    do z=-z_max, +z_max
+       do y=-y_max, +y_max
+          do x=-x_max, +x_max
+             if (plane .eq. 'x' .or. plane .eq. 'X')&
+                  distance = abs(x-x_center)
+             if (plane .eq. 'y' .or. plane .eq. 'Y')&
+                  distance = abs(y-y_center)
+             if (plane .eq. 'z' .or. plane .eq. 'Z')&
                   distance = abs(z-z_center)
 !
-               if (distance .lt. 0.1) then
-                  grid(x,y,z) = nhyd
-               else
-                  if (nhyd*(distance/z_0)**dens_exponent&
-                       .gt. cutoff) then
-                     grid(x,y,z)=cutoff
-                  else 
-                     grid(x,y,z)=nhyd*(distance/z_0)**(-dens_exponent)
-                  end if
-               end if
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine powerplanecutoff
+             if (distance .lt. 0.1) then
+                grid(x,y,z) = nhyd
+             else
+                if (nhyd*(distance/z_0)**dens_exponent&
+                     .gt. cutoff) then
+                   grid(x,y,z)=cutoff
+                else 
+                   grid(x,y,z)=nhyd*(distance/z_0)**(-dens_exponent)
+                end if
+             end if
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine powerplanecutoff
 
-    subroutine sphere
-      implicit none
-      integer(i4b):: x,y,z
-      real   ( dp):: xdist, ydist, zdist, distance
-      do z=-z_max,+z_max
-         do y=-y_max,+y_max
-            do x=-x_max,+x_max
-               xdist=(x-x_center)
-               ydist=(y-y_center)
-               zdist=(z-z_center)
-               distance = sqrt(xdist**2+ydist**2+zdist**2)
-               if (distance .le. radius) then
-                  grid(x,y,z)=nhyd
-               end if
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine sphere
+  subroutine sphere
+    implicit none
+    integer(i4b):: x,y,z
+    real   ( dp):: xdist, ydist, zdist, distance
+    do z=-z_max,+z_max
+       do y=-y_max,+y_max
+          do x=-x_max,+x_max
+             xdist=(x-x_center)
+             ydist=(y-y_center)
+             zdist=(z-z_center)
+             distance = sqrt(xdist**2+ydist**2+zdist**2)
+             if (distance .le. radius) then
+                grid(x,y,z)=nhyd
+             end if
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine sphere
 
-    subroutine ellipsoid
-      implicit none
-      integer(i4b)  :: x,y,z
-      real(dp) :: xdist, ydist, zdist
-      do z=-z_max,+z_max
-         do y =-y_max, +y_max
-            do x=-x_max, +x_max
-               xdist=(x-x_center)
-               ydist=(y-y_center)
-               zdist=(z-z_center)
-               if ((real(xdist**2)/real(x_half_axis**2))+&
-                   (real(ydist**2)/real(y_half_axis**2))+&
-                   (real(zdist**2)/real(z_half_axis**2)) .le. 1._dp) then
-                  grid(x,y,z)=nhyd
-               end if
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine ellipsoid
+  subroutine ellipsoid
+    implicit none
+    integer(i4b)  :: x,y,z
+    real(dp) :: xdist, ydist, zdist
+    do z=-z_max,+z_max
+       do y =-y_max, +y_max
+          do x=-x_max, +x_max
+             xdist=(x-x_center)
+             ydist=(y-y_center)
+             zdist=(z-z_center)
+             if ((real(xdist**2)/real(x_half_axis**2))+&
+                  (real(ydist**2)/real(y_half_axis**2))+&
+                  (real(zdist**2)/real(z_half_axis**2)) .le. 1._dp) then
+                grid(x,y,z)=nhyd
+             end if
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine ellipsoid
 
-    subroutine random_remove
-      implicit none
-      integer (i4b):: x,y,z
-      real    (dp) :: harvest    ! as opposed to (random_)seed ...
-      call random_seed()
-      do z=-z_max,+z_max
-         do y=-y_max,+y_max
-            do x=-x_max,+x_max
-               call random_number(harvest)
-               if (harvest .gt. macro_filling_factor)&
-                    grid(x,y,z) = nhyd_fill
-            end do
-         end do
-      end do
-    end subroutine random_remove
+  subroutine random_remove
+    implicit none
+    integer (i4b):: x,y,z
+    real    (dp) :: harvest    ! as opposed to (random_)seed ...
+    call random_seed()
+    do z=-z_max,+z_max
+       do y=-y_max,+y_max
+          do x=-x_max,+x_max
+             call random_number(harvest)
+             if (harvest .gt. macro_filling_factor)&
+                  grid(x,y,z) = nhyd_fill
+          end do
+       end do
+    end do
+  end subroutine random_remove
 
-    subroutine gaussian
-      implicit none
-      integer (i4b):: x,y,z
-      real    ( dp):: xdist, ydist,zdist,distance
-      print*, "GAUSSIAN"
-      do z=-z_max,+z_max
-         do y=-y_max,+y_max
-            do x=-x_max, +x_max
-               xdist=abs(x-x_center)
-               ydist=abs(y-y_center)
-               zdist=abs(z-z_center)
-               distance=sqrt(xdist**2+ydist**2+zdist**2)
-               grid(x,y,z)=nhyd*exp(-distance**2/sigma**2)
-            end do
-         end do
-      end do
-      mode_set=.true.
-    end subroutine gaussian
-
-end program
+  subroutine gaussian
+    implicit none
+    integer (i4b):: x,y,z
+    real    ( dp):: xdist, ydist,zdist,distance
+    print*, "GAUSSIAN"
+    do z=-z_max,+z_max
+       do y=-y_max,+y_max
+          do x=-x_max, +x_max
+             xdist=abs(x-x_center)
+             ydist=abs(y-y_center)
+             zdist=abs(z-z_center)
+             distance=sqrt(xdist**2+ydist**2+zdist**2)
+             grid(x,y,z)=nhyd*exp(-distance**2/sigma**2)
+          end do
+       end do
+    end do
+    mode_set=.true.
+  end subroutine gaussian
+  
+END PROGRAM THREEDHYDRO

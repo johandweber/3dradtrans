@@ -1,28 +1,27 @@
-program get_rec_rate
-!
-! Determines the entruire recombination rate of pure hydrogen
-! if it doess not match the ionization rate, you are in trouble...
+!==============================================================================
+program GET_REC_RATE
 ! 
+! Determines the entrire recombination rate of pure hydrogen
+! if it doess not match the ionization ratein the equilibrum case,
+!  you are in trouble...
+!
+  use M_data_types
+  use M_natural_constants
+!  
   implicit none
-  integer, parameter :: i4b=selected_int_kind(8)
-  integer, parameter :: dp = selected_real_kind(13,300)
-
-  double precision, parameter :: nc_parsec=3.0856780800D+18
-
-  integer:: xrange, yrange, zrange
-  integer:: x,y,z
-  integer:: argc
+! 
+  integer(i4b):: xrange, yrange, zrange
+  integer(i4b):: x,y,z
+  integer(i4b):: argc
   character (len=3000):: filenameprefix
   character (len=80)  :: l_cell_string
-  double precision    :: l_cell
-  double precision, dimension (:,:,:), allocatable :: H,e, temp
-  double precision, dimension (:,:,:), allocatable :: cellrecrate
-  double precision    :: dummy1, dummy2
-!
-! 
-
+  real(dp)    :: l_cell
+  real(dp), dimension (:,:,:), allocatable :: H,e, temp
+  real(dp), dimension (:,:,:), allocatable :: cellrecrate
+  real(dp)    :: dummy1, dummy2
+!==============================================================================
   argc=command_argument_count()
-
+!
   if (argc .ne. 2) then
      write(*,*) 'Invalid number of arguments !'
      write(*,*)
@@ -33,11 +32,11 @@ program get_rec_rate
      write(*,*) 'first dot'
      stop
   end if
-
+!
   call get_command_argument(1, filenameprefix)
   call get_command_argument(2, l_cell_string)
   read(l_cell_string,*) l_cell
-
+!
   write(*,*) "opening ",adjustr(trim(adjustl(filenameprefix)))&
        //".H.txt"
   open(unit=101, name=adjustr(trim(adjustl(filenameprefix)))&
@@ -84,7 +83,7 @@ program get_rec_rate
   contains
 
 !===============================================================================
-  real(dp) function HYDREC(T,N)
+  real(dp) function hydrec(T,N)
     !
     ! Computes total recombination rates and total recombination cooling
     ! coefficients for hydrogen by interpolating the table of
@@ -103,17 +102,17 @@ program get_rec_rate
     !  called by CALC_HYDROGEN
     !
     !input
-  IMPLICIT NONE
+  implicit none
     !
-    REAL   (dp )  :: T
-    INTEGER(i4b)  :: N
+    real   (dp )  :: t
+    integer(i4b)  :: n
     !local
-    INTEGER(i4b)  :: I,J
-    REAL   (dp )  :: Q,S,A,X
-    REAL   (dp ), DIMENSION(31,7) :: C
+    integer(i4b)  :: i,y
+    real   (dp )  :: q,s,a,x
+    real   (dp ), dimension(31,7) :: c
 !===============================================================================
 !
-    DATA ((C(I,J),J=1,7),I=1,31)/ &
+    data ((c(i,j),j=1,7),i=1,31)/ &
          1.0_dp,1.646E-11_dp,9.283E-11_dp,1.646E-11_dp,8.287E-11_dp,1.061E-11_dp,9.348E-11_dp,&
          1.2_dp,1.646E-11_dp,8.823E-11_dp,1.646E-11_dp,7.821E-11_dp,1.068E-11_dp,8.889E-11_dp,&
          1.4_dp,1.646E-11_dp,8.361E-11_dp,1.646E-11_dp,7.356E-11_dp,1.076E-11_dp,8.432E-11_dp,&
@@ -148,36 +147,36 @@ program get_rec_rate
     !
     !--------------------------------------------------------------------------------------
     ! statement function for table interpolation
-    X(A,I,J)=C(I,J)+A*(C(I+1,J)-C(I,J))
+    x(a,i,j)=c(i,j)+a*(c(i+1,j)-c(i,j))
     !-------------------------------------------------------------------------
     !
-    Q=SQRT (T)
-    S=LOG10(T)
-    IF(S.GT.7.0.OR.S.LT.1.0) THEN
-       print*,T,S,log10(T)
-       STOP 'HYDREC: Temperature out of range'
-    END IF
-    DO I=1,30
-       IF(S.GE.C(I,1).AND.S.LE.C(I+1,1)) GOTO 1
-    END DO
-    STOP 'HYDREC: Unexpected error'
-1   CONTINUE
-    A=(S-C(I,1))/(C(I+1,1)-C(I,1))
-    IF    (N.EQ.1) THEN
-       HYDREC=(X(A,I,2)+X(A,I,3))/Q
-    ELSEIF(N.EQ.2) THEN
-       HYDREC=(X(A,I,4)+X(A,I,5))/Q
-    ELSEIF(N.EQ.3) THEN
-       HYDREC=X(A,I,6)/Q
-    ELSEIF(N .EQ. 4) THEN
-       HYDREC=X(A,I,3)/Q          
-    ELSEIF(N .EQ. 5) THEN
-       HYDREC=X(A,I,5)/Q
-    ELSE
-       STOP 'HYDREC: Bad parameter'
-    ENDIF
-    RETURN
-  end function HYDREC
+    q=sqrt (t)
+    s=log10(t)
+    if(s .gt. 7.0 .or. s .lt. 1.0) then
+       print*,t,s,log10(t)
+       stop 'HYDREC: Temperature out of range'
+    end if
+    do i=1,30
+       if(s .ge. c(i,1) .and. s .le. c(i+1,1)) goto 1
+    end do
+    stop 'HYDREC: Unexpected error'
+1   continue
+    a=(s-c(i,1))/(c(i+1,1)-c(i,1))
+    if (n .eq. 1) then
+       hydrec=(x(a,i,2)+x(a,i,3))/Q
+    elseif(n .eq.2) then
+       hydrec=(x(a,i,4)+x(a,i,5))/Q
+    elseif(n .eq.3) then
+       hydrec=x(a,i,6)/Q
+    elseif(n .eq. 4) then
+       hydrec=x(a,i,3)/Q          
+    elseif(n .eq. 5) then
+       hydrec=x(a,i,5)/Q
+    else
+       stop 'HYDREC: Bad parameter'
+    endif
+    return
+  end function hydrec
 
 
-end program get_rec_rate
+end program GET_REC_RATE

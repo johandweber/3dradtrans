@@ -54,7 +54,7 @@
 ! M_output_ifrit
 
 !===============================================================================
-PROGRAM radtrans_3d
+PROGRAM RADTRANS_3D
 !
   use M_data_types
   use M_definitions          , ONLY:  load_parameters,&
@@ -118,47 +118,47 @@ PROGRAM radtrans_3d
      end if
   end if
 !
-  call LOAD_PARAMETERS
-  call ALLOCATE_PHOTON_ARRAYS
+  call load_parameters
+  call allocate_photon_arrays
 !  
   do i=1, num_sources
-     call DATA_TRANSFORM(spectra(i))
-     call PHOTON_ZERO(i)
+     call data_transform(spectra(i))
+     call photon_zero(i)
   end do
 !
-  call ALLOCATE_RAYS
-  call ALLOCATE_GRID
-  call INIT_GEOMETRY
-  call SET_RAY_DIRECTIONS
+  call allocate_rays
+  call allocate_grid
+  call init_geometry
+  call set_ray_directions
 
 !
-  call INITIALIZE_ABUNDANCES
+  call initialize_abundances
 !  
   if (read_from_file) then
-     call INITIALIZE_HYDROGEN_FROM_FILE(ifrit_filename)
+     call initialize_hydrogen_from_file(ifrit_filename)
   else 
-     call INITIALIZE_HYDROGEN
+     call initialize_hydrogen
   end if
 !
   if (resumed) then
      if (binary_output) then
-        call RESUME_COMPUTATION_FROM_BINARY
+        call resume_computation_from_binary
      else
-        call RESUME_COMPUTATION
+        call resume_computation
      end if
   end if
 !
   if (use_mask) then
-     call INITIALIZE_MASK
+     call initialize_mask
   end if
 !
   if (add_heating) then
-     call INITIALIZE_HEATING_POLY
+     call initialize_heating_poly
   end if
 ! 
 !for output of initial hydrogen density
   last_step = .true.
-  call WRITE_IFRIT
+  call write_ifrit
   last_step = .false.
   call system_clock(progwccountlast)
   open(unit=1, file='time.txt')
@@ -173,85 +173,84 @@ PROGRAM radtrans_3d
      write(*,*) "elapsed time in yr. :", t_all/31557600._dp
      rep=rep+1
 !
-     call UPDATE_CHI
+     call update_chi
      write(*,*) " update_chi"
 !
      if (diffuse) then
-        call UPDATE_ETA
+        call update_eta
         write(*,*) "update_eta"
      end if
 !
      print*, "before get_j"
      if (periodic) then
-        call GET_J_PERIODIC
+        call get_j_periodic
      else
-        call GET_J
+        call get_j
      end if
      write(*,*) "get_j"
 !
      if (diffuse) then 
-        call DIFFUSE_FIELD
+        call diffuse_field
         write(*,*) "diffuse_ field"
      end if
 ! 
-     call CALC_HYDROGEN
+     call calc_hydrogen
      write(*,*) "calc_hydrogen"
 !
      if (include_He) then
-        call CALC_HELIUM2
+        call calc_helium2
         write(*,*) "calc_helium2"
      end if
 !
      if (include_metals) then
-          call CALC_METALS
+          call calc_metals
           write(*,*) "calc metals"
        end if
 !
-     call UPDATE_ELECTRON_DENSITY
+     call update_electron_density
      write(*,*) "update electron density"
 !
      if (add_heating) then
-        call APPLY_ADD_HEATING
+        call apply_add_heating
         write(*,*) "apply_add_heating"
      end if
 
      if (extra_heating) then
-        call CALL_EXTERNAL_HC_PROGRAM
-        call APPLY_EXTRA_HEATING_COOLING
+        call call_external_hc_program
+        call apply_extra_heating_cooling
      end if
 !
     if (compute_temperature) then
-        call UPDATE_TEMPERATURE
+        call update_temperature
         write(*,*) "update_temperature"
      end if
-
+!
      if (o_thermal_pressure) then
-        call UPDATE_THERMAL_PRESSURE
+        call update_thermal_pressure
         write(*,*) "update_thermal_pressure"
      end if
-
  !
      if (binary_output) then
-        call WRITE_IFRIT_BIN
+        call write_ifrit_bin
      else
-        call WRITE_IFRIT
+        call write_ifrit
      end if
      write(*,*) "write_ifrit"
 !
      if (trace_expansion) then
-        call EXPAND_SPACE
+        call expand_space
         write(*,*) "expand_space"
      end if
 
 !
      if (verbose_stdout) then
-        call LOG_ITERATION_STEP
+        call log_iteration_step
         write(*,*) "log_iteration_step"
      end if
-
+!
      call cpu_time(progcputime)
      call system_clock(progwccount, progwcrate)
-
+!
      if (trace_expansion) then
         write(1,'(F15.3, F15.3, F10.4, I6, F15.3 ,F15.3)') &
              t_step/31556925.9747_dp, t_all/31556925.9747_dp,&
@@ -273,14 +272,14 @@ PROGRAM radtrans_3d
 !  
   last_step = .true.
   if (binary_output) then
-     call WRITE_IFRIT_BIN
+     call write_ifrit_bin
   else
-     call WRITE_IFRIT
+     call write_ifrit
   end if
   call cpu_time(cpu_finish)
   call system_clock(wallclock_finish,progwcrate)
-
-  call CREATE_LOGFILE
+!
+  call create_logfile
 !  
   write(*,*) "Wallclock time in s :", 1._dp*(wallclock_finish-wallclock_start)/&
                                       progwcrate
@@ -288,4 +287,4 @@ PROGRAM radtrans_3d
   close(1)
   close(33)
 !------------------------------------------------------------------------------ 
-end program radtrans_3d
+END PROGRAM RADTRANS_3D

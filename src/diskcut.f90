@@ -1,5 +1,5 @@
 !=============================================================================
-program diskcut
+program DISKCUT
 ! Computes the star formation rate within an sqare "cut" of the plane of a 
 ! galactic disk (including the space "above" and "below" the disk)
 ! It assumes an exponential decay of the star fromation density of a galaxy as
@@ -7,7 +7,7 @@ program diskcut
 ! spiral arms.
 !
   use M_data_types
-  use M_natural_constants                , only: nc_pi
+!
   implicit none
   integer :: x,y 
   integer::  resol=20000
@@ -49,4 +49,4 @@ program diskcut
       sfr_density=total/(sc_len**2*(8._dp*atan(1._dp)))*exp(-distance/sc_len)
     end function sfr_density
 !
-end program diskcut
+end program DISKCUT

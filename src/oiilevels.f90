@@ -7,8 +7,8 @@
 !
     use M_data_types
     use M_natural_constants   ,only : nc_pi, nc_boltzmann, nc_planck
-    use M_subsystems          ,only : GENERATE_MATRIX, SOLVE_MATRIX,&
-         COMPARE_EMISSION_ENERGY
+    use M_subsystems          ,only : generate_matrix, solve_matrix,&
+                                      compare_emission_energy
     implicit none
     integer(i4b), parameter        :: n=5
     integer(i4b)                   :: linecounter

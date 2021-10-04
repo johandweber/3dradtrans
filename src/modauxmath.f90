@@ -34,7 +34,7 @@ module M_auxmath
 contains
 
 !=============================================================================
-  function  solvelc (a1, a0, info)
+  function  SOLVELC (a1, a0, info)
 ! solver for linear equation
 ! solves a1 * x + a2 = 0
     implicit none
@@ -55,11 +55,11 @@ contains
     if (present(info))&
          info%polynomial_degree=1
     solvelc= -a0/a1 
-  end function solvelc
+  end function SOLVELC
 
 
 !==============================================================================
-  function solveqc(a2, a1, a0,info)
+  function SOLVEQC(a2, a1, a0,info)
 ! solver for quadratic equation
 ! solves a2 * x**2 + a1 * x + a0 = 0
     implicit none
@@ -82,10 +82,10 @@ contains
        solveqc(1) = (-a1 - sqrt(a1**2-4*a2*a0))/(2*a2)
        solveqc(2) = (-a1 + sqrt(a1**2-4*a2*a0))/(2*a2)
     end if
- end function solveqc
+ end function SOLVEQC
 
 !==============================================================================
-  function solvecc(a3, a2, a1, a0,info)
+  function SOLVECC(a3, a2, a1, a0,info)
 ! solver for cubic equation
 ! solves a3 * x **3 + a2 * x**2 + a1 * x + a0 = 0
     implicit none
@@ -139,10 +139,10 @@ contains
        solvecc(2)=quadratic(1)
        solvecc(3)=quadratic(2)              
     end if
- end function solvecc
+ end function SOLVECC
 
 !==============================================================================
-  function solvebc(a4, a3, a2, a1, a0, info)
+  function SOLVEBC(a4, a3, a2, a1, a0, info)
 ! solver for biquadratic equation
 ! solves a4 * x**4 +  a3 * x **3 + a2 * x**2 + a1 * x + a0 = 0
     implicit none
@@ -199,10 +199,10 @@ contains
        solvebc(4)= -a3/(4._dp*a4)+&
                   0.5_dp*(+w+sqrt(-(alpha+2._dp*y)-2*(alpha+beta/w)))
     end if
- end function solvebc
+ end function SOLVEBC
 
 !=============================================================================
- function solvelr(a1,a0,info)
+ function SOLVELR(a1,a0,info)
 ! As above, but for real arguments. Return value remains complex
    implicit none
    real(dp)                        :: a1, a0
@@ -216,18 +216,18 @@ contains
       solvelr=solvelc(cmplx(a1,0._dp,dp), cmplx(a0, 0._dp,dp))
    end if
       
- end function solvelr
+ end function SOLVELR
   
 
 !=============================================================================
- function solveqr(a2,a1,a0,info)
+ function SOLVEQR(a2,a1,a0,info)
 ! As above, but for real arguments. Return values remain complex
    implicit none
    real(dp)                        :: a2,a1, a0
    type(polynomialinfo), optional  :: info
    complex(dp), dimension (1:2)    :: solveqr
 !=============================================================================  
-
+!
    if (present(info)) then
       solveqr=solveqc(cmplx(a2, 0._dp,dp), cmplx(a1,0._dp,dp),&
            cmplx(a0, 0._dp,dp), info)
@@ -235,12 +235,12 @@ contains
        solveqr=solveqc(cmplx(a2, 0._dp,dp), cmplx(a1,0._dp,dp),&
                        cmplx(a0, 0._dp,dp))     
    end if
-
- end function solveqr
+!
+ end function SOLVEQR
 
 
 !=============================================================================
- function solvecr(a3,a2, a1,a0,info)
+ function SOLVECR(a3,a2, a1,a0,info)
 ! As above, but for real arguments. Return values remain complex
    implicit none
    real(dp)                        :: a3,a2,a1, a0
@@ -255,12 +255,12 @@ contains
       solvecr=solvecc(cmplx(a3,0._dp,dp), cmplx(a2, 0._dp,dp),&
                       cmplx(a1,0._dp,dp), cmplx(a0, 0._dp,dp))
    end if
-
- end function solvecr
+!
+ end function SOLVECR
 
 
 !=============================================================================
- function solvebr(a4,a3,a2,a1,a0,info)
+ function SOLVEBR(a4,a3,a2,a1,a0,info)
 ! As above, but for real arguments. Return values remain complex
    implicit none
    real(dp)                        :: a4,a3,a2,a1, a0
@@ -277,10 +277,10 @@ contains
                       cmplx(a2, 0._dp,dp), cmplx(a1,0._dp,dp),&
                       cmplx(a0, 0._dp,dp))
    end if
- end function solvebr
+ end function SOLVEBR
 
 !=============================================================================
- function facultyr(n)
+ function FACULTYR(n)
 ! faculty of n as a real value (a real value can represent a larger number
 ! than an integer)
    implicit none
@@ -304,10 +304,10 @@ contains
          facultyr=facultyr*real(counter, KIND=dp)
       end do
    end if
- end function facultyr
+ end function FACULTYR
 
 !============================================================================
-function expm1(x)
+function EXPM1(x)
 ! The result of exp(x)-1 leads to a "small difference of large numbers"  
 ! problem if x is close to 0. This function fixes the problem
   implicit none
@@ -352,10 +352,10 @@ function expm1(x)
         expm1=expm1+taylorcoeff(counter)*xpot(counter)
     end do          
   end if
-end function expm1
+end function EXPM1
 
 !============================================================================
-function expm1h(x)
+function EXPM1H(x)
 ! The result of exp(x)-1 leads to a "small difference of large numbers"  
 ! problem if x is close to 0. This function fixes the problem
 ! This is an alternative implementation that is based on the
@@ -371,6 +371,6 @@ function expm1h(x)
   real(dp)                     :: x, expm1h
 !===========================================================================
 expm1h= tanh(x/2._dp)*(exp(x)+1._dp)
-end function expm1h
+end function EXPM1H
 
 end module M_auxmath

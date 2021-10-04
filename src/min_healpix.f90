@@ -1,6 +1,6 @@
 !===============================================================================
 !                          ****MODULE M_min_healpix****
-! This routine was taken from the Healpix project ((c) Gorski et. al) and is 
+! This routine was taken from the Healpix project ((c) Gorski et. al.) and is 
 ! licensed by GPL  It gives the components of an unit vector according to the 
 ! Healpix Scheme 
 !===============================================================================

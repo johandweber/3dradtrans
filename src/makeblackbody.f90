@@ -1,5 +1,5 @@
 !=============================================================================
-program makeblackbody
+program MAKEBLACKBODY
 ! creates a fake "MERGESPEC" file that can be read from occup_3d_ext
 !
   use M_data_types
@@ -82,7 +82,4 @@ program makeblackbody
      stop
   endif
 
-contains
-
-
-end program makeblackbody
+end program MAKEBLACKBODY

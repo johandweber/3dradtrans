@@ -1,7 +1,7 @@
 !=============================================================================
 program IFRITCALC
 !
-! Allowd calculations with IFRiT files in a non-interactive way 
+! Allows calculations with IFRiT files in a non-interactive way 
 !
 !
   use M_data_types
@@ -28,9 +28,9 @@ program IFRITCALC
                                              rightconst2, rightconst3, rightconst4
   character(len=255)                      :: action
 !------------------------------------------------------------------------------  
-
+!
   call get_command_argument(1,action)
-
+!
   if (trim(action) .eq. "add") then     
      call readinputbinaryop()
      write(*,*) x_max, y_max, z_max
@@ -43,7 +43,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "sub") then     
      call readinputbinaryop()
      write(*,*) x_max, y_max, z_max
@@ -69,7 +69,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "div") then     
      call readinputbinaryop()
      write(*,*) x_max, y_max, z_max
@@ -82,7 +82,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "pow") then     
      call readinputbinaryop()
      write(*,*) x_max, y_max, z_max
@@ -95,7 +95,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "log") then     
      call readinputfunction()
      write(*,*) x_max, y_max, z_max
@@ -108,7 +108,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "log10") then     
      call readinputfunction()
      write(*,*) x_max, y_max, z_max
@@ -121,7 +121,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "exp") then     
      call readinputfunction()
      write(*,*) x_max, y_max, z_max
@@ -134,8 +134,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
-
+!
   if (trim(action) .eq. "exp10") then     
      call readinputfunction()
      write(*,*) x_max, y_max, z_max
@@ -148,8 +147,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
-
+!
   if (trim(action) .eq. "addc") then     
      call readinputrightconst()
      write(*,*) x_max, y_max, z_max
@@ -162,7 +160,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "subc") then     
      call readinputrightconst()
      write(*,*) x_max, y_max, z_max
@@ -175,7 +173,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "mulc") then     
      call readinputrightconst()
      write(*,*) x_max, y_max, z_max
@@ -188,7 +186,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "divc") then     
      call readinputrightconst()
      write(*,*) x_max, y_max, z_max
@@ -201,7 +199,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "powc") then     
      call readinputrightconst()
      write(*,*) x_max, y_max, z_max
@@ -214,7 +212,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "cadd") then     
      call readinputleftconst()
      write(*,*) x_max, y_max, z_max
@@ -227,7 +225,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "csub") then     
      call readinputleftconst()
      write(*,*) x_max, y_max, z_max
@@ -240,8 +238,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
-
+!
   if (trim(action) .eq. "cmul") then     
      call readinputleftconst()
      write(*,*) x_max, y_max, z_max
@@ -254,8 +251,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
-
+!
   if (trim(action) .eq. "cdiv") then     
      call readinputleftconst()
      write(*,*) x_max, y_max, z_max
@@ -268,8 +264,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
-
+!
   if (trim(action) .eq. "cpow") then     
      call readinputleftconst()
      write(*,*) x_max, y_max, z_max
@@ -282,7 +277,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "minmax") then     
      call readinput2rightconst()
      write(*,*) x_max, y_max, z_max
@@ -298,7 +293,7 @@ program IFRITCALC
      end do
      matched_option=.true.
   end if
-
+!
   if (trim(action) .eq. "mask") then     
      call readinput2rightconst()
      write(*,*) x_max, y_max, z_max

@@ -17,8 +17,10 @@ module M_blackbody
 !
   implicit none
 !
-  contains
-   subroutine Write_bb(temperature, radius, templatefile, outputfile)
+contains
+
+!==============================================================================  
+   subroutine WRITE_BB(temperature, radius, templatefile, outputfile)
 !    writes the a blackbody spectrum into a file that resembles a
 !    "MERGESPEC" file of WM-Basic that can be read by occup_3d_ext
 !    if the "mergespec" switch in the input file is set to ".true.".
@@ -35,7 +37,8 @@ module M_blackbody
      real(dp)           :: wavelength, hedd, conthedd, heddratio
      integer(i4b)       :: wavelengthcounter, ntcounter
      real(dp)           :: frequency, hnue
-
+!==============================================================================     
+!
      open(file=trim(templatefile), unit=101)
      open(file=trim(outputfile), unit=102)
      read(101,*) dummy_int, lf_m, corr_m, ifred_m, ifblue_m, hflux_m,&
@@ -64,6 +67,6 @@ module M_blackbody
      end do
      close(101)
      close(102)
-   end subroutine write_bb
+   end subroutine WRITE_BB
     
 end module M_blackbody

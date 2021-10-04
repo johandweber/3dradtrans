@@ -26,11 +26,11 @@ contains
 !================================================================================ 
   subroutine DATA_TRANSFORM(filename)
 !
-!  Is responsible for reading the descriptions of the SEDs and transfroming them
-!  to the internal frequency grid of the program (with a reduced number of 
-!  frequency points)
+!    Is responsible for reading the descriptions of the SEDs and transfroming them
+!    to the internal frequency grid of the program (with a reduced number of 
+!    frequency points)
 !
-! called by main program 
+!  called by main program 
 !
   implicit none
 !
@@ -49,12 +49,11 @@ contains
 !
 !    Reads the spectra
 !
-!   called by DATA_TRANSFORM
+!  called by DATA_TRANSFORM
 !       
     
   use M_definitions,              only: mergespec
-  use M_natural_constants,        only: nc_planck, nc_light
-   
+  use M_natural_constants,        only: nc_planck, nc_light   
 !
   implicit none
 !
@@ -110,7 +109,6 @@ contains
     else
 !
        row_end=2900  
-!
        if (.not. allocated(wlength)) then
           allocate (wlength (0:row_end))
           allocate (spectrum (0: row_end))
@@ -141,13 +139,15 @@ contains
     endif
 !
   end subroutine INPUT
-!    
+
+
+  
 !===============================================================================  
   subroutine NU_GRID
 !
-!    Creates the frequency grid.
+!   Creates the frequency grid.
 !
-!   called by DATA_TRANSFORM
+!  called by DATA_TRANSFORM
 !
     use M_natural_constants,    only: nc_light, nc_lyman_edge
     use M_definitions,          only: points, lower_energy_limit
@@ -177,13 +177,12 @@ contains
 
 
 
-  
 !================================================================================ 
  subroutine INPUT_TRANSFORM
 !
 !    Remaps the read spectra to the internal frequency grid
 !
-! called by DATA_TRANSFORm
+! called by DATA_TRANSFORM
 !
    use M_natural_constants, only: nc_light
    use M_definitions,       only: points
@@ -214,7 +213,6 @@ contains
       nugh_spect(p)=(nugh_under+nugh_over)/2._dp
       !print*,p,nugh(p),nugh_spect(p)
    end do
-
 !      
    fp=row_end-1
    interval_fill=0

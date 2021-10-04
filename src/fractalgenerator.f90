@@ -1,23 +1,27 @@
-program fractal
+program FRACTAL
+!
+! Created a fractal density distribution for the simulation of the gas  
+!  
+  use M_data_types
   implicit none
-  real, dimension(:,:,:), allocatable :: density
-  integer, dimension(:,:,:), allocatable :: numbers_in_grid
+  real(dp), dimension(:,:,:), allocatable :: density
+  integer(i4b), dimension(:,:,:), allocatable :: numbers_in_grid
+!  
+  real(dp)          :: xpos,ypos,zpos
+!  
+  real(dp)          :: fractal_dimension
   
-  real:: xpos,ypos,zpos
-  
-  real:: fractal_dimension
-  
-  integer::  x_max, y_max, z_max
-  integer::  tiers, tier1, tier_counter
-  integer:: x, y, z
-  real:: emptyradius, smooth, clumpy
-  integer:: generation_counter
-  integer(8),save  :: number_of_points, void_points
-  integer, dimension(20):: number_in_tier 
-  real, dimension(20)::ranges
-  real :: nop
-  real:: ion_fraction
-  
+  integer(i4b)      ::  x_max, y_max, z_max
+  integer(i4b)      ::  tiers, tier1, tier_counter
+  integer(i4b)      :: x, y, z
+  real(dp)          :: emptyradius, smooth, clumpy
+  integer(i4b)      :: generation_counter
+  integer(i8b)      :: number_of_points, void_points
+  integer(i4b), dimension(20):: number_in_tier 
+  real(dp), dimension(20)::ranges
+  real(dp)          :: nop
+  real(dp)          :: ion_fraction
+!  
   write(*,*) 'Please intput x_max (xrange: [-x_max:+x_max],'//&
        ' i.e., 2*x_max+1 cells in x-direction) :'
   read(*,*)   x_max
@@ -66,7 +70,7 @@ program fractal
       number_in_tier(generation_counter)=32
     end if  
   end do
-  
+!  
   do generation_counter=5,1,-1
     if (generation_counter .eq. 5) then
       ranges(generation_counter)=1.
@@ -92,7 +96,7 @@ program fractal
 !    write(12,*) x,y,z,1
     call level(xpos,ypos,zpos, tiers,32,tier1)
   end do
-    
+!    
   do x=-x_max,+x_max
      do y=-y_max,+y_max
         do z=-z_max,+z_max
@@ -102,7 +106,7 @@ program fractal
         end do
      end do
   end do
-  
+!  
   do x=-x_max,+x_max
     do y=-y_max,+y_max
        do z=-z_max,+z_max
@@ -113,21 +117,18 @@ program fractal
        end do
     end do
  end do
-
-  
-  write(*,*) 'Number of void points :', void_points
-  write(*,*) 'Percentage of void volume :',&
+!  
+ write(*,*) 'Number of void points :', void_points
+ write(*,*) 'Percentage of void volume :',&
               real(void_points)/&
               real((2*x_max+1)*(2*y_max+1)*(2*z_max+1))*100., "%"
-
-  nop=tier1
-  do generation_counter=tiers-1,1,-1
+!
+ nop=tier1
+ do generation_counter=tiers-1,1,-1
     nop=nop*number_in_tier(generation_counter)
-  end do
-  print*, 'nop :', nop
-    
-!  nop=(2.*2./3.)*(2*x_max+1)*(2*y_max+1)*(2*z_max+1)/nop
-    
+ end do
+ print*, 'nop :', nop
+!    
   open(11,file='fractaltest.txt')
   write(11,*) 2*x_max+1, 2*y_max+1, 2*z_max+1
   do z=-x_max, +x_max
@@ -149,68 +150,62 @@ program fractal
   
 contains
 
-recursive subroutine level (x_0,y_0, z_0,generation,N,N_old)
-  implicit none
-  real:: x_0, y_0, z_0
-  real:: x_local,y_local,z_local
-  integer:: generation,N, N_counter,N_old
-  
-  if (generation .eq. 1) then
-     if(.true.) then
-!   if(x_0 .gt. 0. .and. x_0 .lt. 1. .and. y_0 .gt. 0. .and. y_0 .lt.1 .and. z_0 .gt.0 .and. z_0 .lt. 1) then
-
-      numbers_in_grid(floor(-x_max+periodic(x_0,1.)*(2*x_max+0.99999)),&
-                      floor(-y_max+periodic(y_0,1.)*(2*y_max+0.99999)),&
-                      floor(-z_max+periodic(z_0,1.)*(2*z_max+0.99999)))=&
-      numbers_in_grid(floor(-x_max+periodic(x_0,1.)*(2*x_max+0.99999)),&
-                      floor(-y_max+periodic(y_0,1.)*(2*y_max+0.99999)),&
-                      floor(-z_max+periodic(z_0,1.)*(2*z_max+0.99999)))+1
+  recursive subroutine level (x_0,y_0, z_0,generation,N,N_old)
+    implicit none
+    real(dp)     :: x_0, y_0, z_0
+    real(dp)     :: x_local,y_local,z_local
+    integer(i4b) :: generation,N, N_counter,N_old
+    
+    if (generation .eq. 1) then
+       if(.true.) then
+          !   if(x_0 .gt. 0. .and. x_0 .lt. 1. .and. y_0 .gt. 0. .and. y_0 .lt.1 .and. z_0 .gt.0 .and. z_0 .lt. 1) then
+          
+          numbers_in_grid(floor(-x_max+periodic(x_0,1._dp)*(2*x_max+0.99999_dp)),&
+                          floor(-y_max+periodic(y_0,1._dp)*(2*y_max+0.99999_dp)),&
+                          floor(-z_max+periodic(z_0,1._dp)*(2*z_max+0.99999_dp)))=&
+          numbers_in_grid(floor(-x_max+periodic(x_0,1._dp)*(2*x_max+0.99999_dp)),&
+                          floor(-y_max+periodic(y_0,1._dp)*(2*y_max+0.99999_dp)),&
+                          floor(-z_max+periodic(z_0,1._dp)*(2*z_max+0.99999_dp)))+1
 !      write(*,*) generation, N_counter, x_0, y_0, z_0
 !      write(*,*)
-      number_of_points=number_of_points+1
+          number_of_points=number_of_points+1
+       end if
+    else
+       do N_counter=1,N
+          call random_number(x_local)
+          x_local=x_local-0.5
+          call random_number(y_local)
+          y_local=y_local-0.5
+          call random_number(z_local)
+          z_local=z_local-0.5
+!
+          x_local=x_0 + x_local*ranges(generation-1)
+          y_local=y_0 + y_local*ranges(generation-1)      
+          z_local=z_0 + z_local*ranges(generation-1)
+!
+          call level(x_local,y_local,z_local,generation-1,32,32)
+       end do
     end if
-  else
-    do N_counter=1,N
-      call random_number(x_local)
-      x_local=x_local-0.5
-      call random_number(y_local)
-      y_local=y_local-0.5
-      call random_number(z_local)
-      z_local=z_local-0.5
-!       x_local=periodic(x_0 + x_local*ranges(generation),1.)
-!       y_local=periodic(y_0 + y_local*ranges(generation),1.)
-!       z_local=periodic(z_0 + z_local*ranges(generation),1.)
-      x_local=x_0 + x_local*ranges(generation-1)
-      y_local=y_0 + y_local*ranges(generation-1)
-      
-      z_local=z_0 + z_local*ranges(generation-1)
-!      write(*,*) generation, N_counter, x_0, y_0, z_0
-!      read(*,*)
-!      print*, generation, N_counter,1.0*number_of_points/((1.*32)**tiers)*100,'%'
-      call level(x_local,y_local,z_local,generation-1,32,32)
-    end do
-  end if
-  return
-end subroutine level 
+    return
+  end subroutine level
 
- real function periodic (a,b)
-   implicit none
-   real:: a,b, tmp
-   if (a.lt. -b .or. a .gt. 2*b) &
-     stop 'range error'
-   if (a .ge. 0. .and. a .le. b) then
-     tmp=a
-   else if (a .lt. 0) then
-     tmp=b+a
-   else if (a .gt. b) then
-     tmp=a-b
-   end if
-   if (tmp .le.0 .or. tmp .ge. 2)&
-     stop 'periodic out of range'  
-   periodic=tmp 
- end function periodic
-
-
-end program fractal
+  real(dp) function periodic (a,b)
+    implicit none
+    real(dp):: a,b, tmp
+    if (a.lt. -b .or. a .gt. 2*b) &
+         stop 'range error'
+    if (a .ge. 0. .and. a .le. b) then
+       tmp=a
+    else if (a .lt. 0) then
+       tmp=b+a
+    else if (a .gt. b) then
+       tmp=a-b
+    end if
+    if (tmp .le.0 .or. tmp .ge. 2)&
+         stop 'periodic out of range'  
+    periodic=tmp 
+  end function periodic
+  
+end program FRACTAL
 
 

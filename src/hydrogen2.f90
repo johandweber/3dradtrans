@@ -49,7 +49,10 @@ contains
 
 !============================================================================
   subroutine INITIALIZE_MASK
-!used for masking out
+!     used for masking out cells that shoulb not be modified during the
+!     simulation
+!  used by the main program     
+!    
     use M_definitions              ,only: x_max, y_max, z_max, mask_filename
     use M_grid_memory              ,only: mask
     implicit none
@@ -68,6 +71,8 @@ contains
     close(500)
   end subroutine INITIALIZE_MASK
 
+
+  
 !=============================================================================
   subroutine INITIALIZE_HEATING_POLY
     use M_definitions              ,only: x_max, y_max, z_max,&
@@ -95,12 +100,14 @@ end subroutine INITIALIZE_HEATING_POLY
 
 !=============================================================================
   subroutine INITIALIZE_ABUNDANCES
-! Initializes the abundanes (in terms of the number density) relative to
-! the number density of hydrogen
-! The hydrogen number density (and the ionization structure) will be 
-! defined in the subroutines INITIALIZE_HYDROGEN and 
-! INITIALIZE_HYDROGEN_FROM FILE
-! It is _not_ called by RESUME_COMPUTATION
+!    Initializes the abundances (in terms of the number density) relative to
+!    the number density of hydrogen
+!    The hydrogen number density (and the ionization structure) will be 
+!    defined in the subroutines INITIALIZE_HYDROGEN and 
+!    INITIALIZE_HYDROGEN_FROM FILE
+
+    
+!    It is _not_ called by RESUME_COMPUTATION
 
     use M_grid_memory             ,only: nH_complete, nHe_complete,&
                                          nC, nN, nO, nNe, nS,nAr,&

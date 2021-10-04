@@ -81,27 +81,25 @@ module M_raysave
       l_max=ceiling(log(f_a*4._dp*nc_pi*&
            & ((2._dp*1._dp*x_max+1._dp)**2+(2*1._dp*y_max*2+1._dp)**2+&
            (2*1._dp*z_max+1)**2))/log(4._dp))
-      
-      
+!      
       if (o_write_escape_fraction) then
          allocate(totaltau(0:12*4**l_max/6,1:8,0:points))
          allocate(escapefraction(1:num_sources,0:points))
       end if
-      
-      
+!            
       write(*,*) '# l_max:', l_max
       write(*,*) '# number of rays: ',12*4**l_max
-      
+!      
       errstat=0
       allocate(ray_cells(0:3*max(2*x_max+3, 2*y_max+3, 2*z_max+3),&
            0:12*4**l_max/6), stat=errstat)
       allocate(ray_split(0:12*4**l_max/6), stat=errstat)
       allocate(ray_number_of_cells(0:12*4**l_max/6), stat=errstat)
-      
+!      
       if (errstat .ne. 0) then
          stop 'memory allocation error'
       end if
-      
+!      
 !     initialize ray_cells with (absurd) initial conditions
       do dummy_counter1=0,12*4**l_max/6 
          do dummy_counter2=0,3*max(2*x_max+1,2*y_max+1,2*z_max+1)
@@ -112,8 +110,7 @@ module M_raysave
          end do
       end do
     end subroutine ALLOCATE_RAYS
-
-
+!
 end module M_raysave
 !===============================================================================
 !                             ****END MODULE M_RAYSAVE****
@@ -198,7 +195,7 @@ module M_grid_memory
 !
 !    Allocates the arrays describing the proberties of the grid cells
 !
-!   called by main program
+!  called by main program
 !
       use M_definitions   , only: spherical, x_max, y_max, z_max, rp_max,&
                                   num_threads, points, log_heating_cooling,&
@@ -441,10 +438,9 @@ module M_grid_memory
       if (errstat .ne. 0) then
          stop 'error allocating memory in allocate_float_values'
       end if
-        
+!        
     end subroutine allocate_float_values
       
-
     end subroutine ALLOCATE_GRID
 end module M_grid_memory
 !===============================================================================
@@ -463,9 +459,9 @@ module M_geometry
 !--- routines TRACERAY
 
   use M_data_types  
- 
+! 
   implicit none
-  
+!  
   contains
 
 !===============================================================================  
@@ -475,7 +471,7 @@ module M_geometry
 !    Note: It does not perform the radiative transfer
 !    This is done in the routines GET_J or GET_J_PERIODIC (and possible DIFFUSE)
 !
-!   called by INIT_GEOMETRY
+!  called by INIT_GEOMETRY
 !
       use M_definitions,     only: x_max, y_max, z_max, l_cell
       use M_raysave,         only: directional_vector, ray_split, rays,&
@@ -592,7 +588,7 @@ module M_geometry
 !    Precomputes the rays (with resect to the origin , for different sources there 
 !    is a different offset
 !
-!   called by main program
+!  called by main program
 !
     use M_raysave,           only: l_max, directional_vector
     use M_min_healpix,       only: PIX2VEC_NEST
@@ -707,7 +703,6 @@ contains
          sqrt(omega_lambda/omega_m*scalefactor**3) +&
          sqrt(1.+omega_lambda/omega_m*scalefactor**3)&
          )
-!    print*,"age", age
     ztoage=age
   end function ZTOAGE
  

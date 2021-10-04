@@ -13,37 +13,49 @@ module M_strongline
   implicit none
 !
 contains
-    logical function isupperbranch(nii, oii)
+
+!==============================================================================
+    logical function ISUPPERBRANCH(nii, oii)
 !   else it is the lower branch
       implicit none
       real(dp) :: nii, oii
+!==============================================================================      
       if (log10(nii/oii) .gt. -1.2_dp) then
          isupperbranch=.true.
       else
          isupperbranch=.false.
       end if
-    end function isupperbranch
+    end function ISUPPERBRANCH
+
     
     
-    real(dp) function Ztoratio(Z)
+!==============================================================================    
+    real(dp) function ZTORATIO(Z)
       implicit none
       real(dp):: Z
+!==============================================================================      
 !      Ztoratio=Z
       Ztoratio=10._dp**(Z-12._dp)
-    end function Ztoratio
+    end function ZTORATIO
 
-    real(dp) function ratiotoZ(ratio)
+
+
+!=============================================================================    
+    real(dp) function RATIOTOZ(ratio)
       implicit none
       real(dp):: ratio
+!=============================================================================      
       ratiotoZ=12._dp+log10(ratio)
-    end function ratiotoZ
+    end function RATIOTOZ
+
     
-    
+
+!==============================================================================    
     real(dp) function M91(nii, oii, oiii, hbeta)
       implicit none
       real(dp) :: nii, oii, oiii, hbeta
       real(dp) :: lower, upper, x, y
-
+!==============================================================================
       x=log10((oii+oiii)/hbeta)
       y=log10(oiii/hbeta)
 
@@ -58,7 +70,10 @@ contains
          m91=lower
       end if
     end function M91
-  
+
+
+    
+!==============================================================================  
     real(dp) function KD02(nii, oii, oiii, hbeta)
 !   Solution of a quartic equation:
 !   log([NII]/[OII])=kd02_fit(nii,oii)
@@ -70,7 +85,7 @@ contains
       real(dp)     :: nii, oii, oiii, hbeta
       real(dp)     :: metallower, metalmiddle, metalupper
       integer(i4b) :: nestedcounter
-!
+!==============================================================================
       metalupper=10._dp
       metallower=8.4_dp
       KD02=0._dp
@@ -85,25 +100,29 @@ contains
                metallower=metalmiddle
             end if
             metalmiddle=0.5_dp*(metalupper+metallower)
-!!$         write(ERROR_UNIT,'(4ES15.4)') log10(nii/oii), kd02_fit(metalmiddle),&
-!!$                             metalmiddle, 10._dp**(metalmiddle-12._dp)
-
          end do
          KD02=metalmiddle
       end if
     end function KD02
 
-    real(dp) function kd02_fit(Z)
+
+
+!==============================================================================    
+    real(dp) function KD02_FIT(Z)
 !   fit polynomial (Eq. A3 of Kewley&Ellison 2008)  
       implicit none
       real(dp) :: Z
+!==============================================================================
       kd02_fit  =  1106.8660_dp               &
                   - 532.15451_dp    * Z       &
                   +  96.373260_dp   * Z ** 2  &
                   -   7.8106123_dp  * Z ** 3  &
                   +   0.23928247_dp * Z ** 4
-    end function kd02_fit
+    end function KD02_FIT
 
+
+    
+!=============================================================================
     real(dp) function  KK04(nii, oii,oiii, hbeta)
       implicit none
       real(dp)     :: nii, oii, oiii, hbeta
@@ -111,6 +130,7 @@ contains
       real(dp)     :: logqlower, logqupper
       real(dp)     :: x,y
       integer(i4b) :: iteration_steps
+!=============================================================================      
       y=log10(oiii/oii)
       x=log10((oii+oiii)/hbeta)
       if (log10(nii/oii) .lt. -1.2_dp) then
@@ -140,11 +160,15 @@ contains
       end if
     end function KK04
 
+
+
+!==============================================================================    
     real(dp) function Z94(nii,oii,oiii,hbeta)
 !   only valid for upper branch
       implicit none
       real(dp):: nii,oii, oiii, hbeta
       real(dp):: x
+!==============================================================================
       x=log10((oii+oiii)/hbeta)
       if (nii/oii .lt. -1.2_dp) then
          Z94=-1_dp    ! Fit not defined in this metallicity range 
@@ -155,10 +179,14 @@ contains
       end if
     end function Z94
 
+
+
+!=============================================================================    
     real(dp) function P05(nii,oii,oiii,hbeta)
       implicit none
       real(dp):: nii, oii, oiii, hbeta
       real(dp):: P, R23
+!==============================================================================      
       R23=(oii+oiii)/hbeta
       P=oiii/R23
       if (log10(nii/oiii) .lt. -1.2) then
@@ -169,11 +197,15 @@ contains
               (85.96_dp+82.76_dp*P+43.98_dp*P**2+1.793_dp*R23)
       end if
     end function P05
+    
 
+
+!==============================================================================    
     real(dp) function D02 (nii, halpha)
       implicit none
       real(dp):: nii, halpha
       real(dp):: n2
+!==============================================================================      
       n2=log10(nii/halpha)
       D02=9.12_dp+0.73_dp*n2
     end function D02

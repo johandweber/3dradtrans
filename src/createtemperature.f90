@@ -1,7 +1,12 @@
-program faketemp
+program INITTEMP
+!  Creates an IFRIT file with a dimesions given via standard input and
+!  a homogeneous temperature structure (T also given via standard input)
+!  Used for creating initial conditions  
+!
+  use M_data_types
   implicit none
-  integer:: x,xmax,y,ymax, z, zmax
-  real:: temp
+  integer(i4b):: x,xmax,y,ymax, z, zmax
+  real(dp):: temp
   read(*,*) xmax, ymax, zmax, temp
   xmax=2*xmax+1
   ymax=2*ymax+1
@@ -14,6 +19,6 @@ program faketemp
         end do
      end do
   end do
-end program faketemp
+end program INITTEMP
  
     

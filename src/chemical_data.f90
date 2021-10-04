@@ -2,7 +2,8 @@ module M_chemical_data
   use M_data_types
   
   integer, parameter :: kel =30                           ! number of considered elements
-  
+
+! Abundances of the elements compared to the solar values
   real(dp)           :: Hetosolar = 1._dp,&
                         Litosolar = 1._dp,&
                         Betosolar = 1._dp,&
@@ -98,6 +99,7 @@ module M_chemical_data
                         Amtosolar = 1._dp,&
                         Cmtosolar = 1._dp
 
+! Are the elemts considered?  
   logical, dimension(1:96)  :: is_considered = (/&
                        .TRUE. , & ! H 
                        .TRUE. , & ! He 
@@ -197,6 +199,7 @@ module M_chemical_data
                        .FALSE.  & ! Cm
                        /)
 
+! What is the lowest considered ionization stage (I => 1; II => 2; 0: not considered)  
   integer, dimension(1:96)  :: lower_ion= (/&
                        1 ,& ! H 
                        1 ,& ! He 
@@ -295,7 +298,7 @@ module M_chemical_data
                        0 ,& ! Am
                        0  & ! Cm
                        /)
-
+! What is the lowest considered ionization stage? (I => 1; II => 2; 0: not considered)  
   integer, dimension(1:96)  :: upper_ion= (/&
                        2 ,& ! H 
                        3 ,& ! He 
@@ -395,8 +398,7 @@ module M_chemical_data
                        0  & ! Cm
           /)
 
- 
-
+ ! Atomic mass of the atoms in atomar mass units 
       REAL(dp), DIMENSION (96), PARAMETER :: ALL_AWEIGHT = &
           (/   1.00794_dp  , & !  1  H   Hydrogen
                4.002602_dp , & !  2  He  Helium
@@ -824,8 +826,4 @@ module M_chemical_data
                    'Cu'   & ! 96  Cm  Curium
                 /) 
  
-
- 
-             
-
 end module M_chemical_data

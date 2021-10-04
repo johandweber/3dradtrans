@@ -5,15 +5,16 @@ program IFRIT2GNUPLOT
 ! be specified in the second command line argument.
  
   use iso_fortran_env
+  use M_data_types
   implicit none
-  integer:: xrange, yrange, zrange
-  integer:: xcounter, ycounter, zcounter
-  integer:: no_of_command_lines, no_cols
-  integer:: columncounter
+  integer(i4b):: xrange, yrange, zrange
+  integer(i4b):: xcounter, ycounter, zcounter
+  integer(i4b):: no_of_command_lines, no_cols
+  integer(i4b):: columncounter
   character(len=2) :: direction
   character(len=2) :: no_cols_string
-  double precision, dimension (:,:,:,:), allocatable :: ifrit_values
-  integer:: written_elements=0
+  real(dp), dimension (:,:,:,:), allocatable :: ifrit_values
+  integer(i4b):: written_elements=0
 !
   no_of_command_lines=command_argument_count()
 !
@@ -84,6 +85,5 @@ program IFRIT2GNUPLOT
         write(*,*)
      end do
   end if
-
-
+!
 end program ifrit2gnuplot

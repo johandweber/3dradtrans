@@ -12,20 +12,16 @@ module M_absorption
 !    DIFFUSE_FIELD
 !    GET_J
 !    GET_J_PERIODIC
-!    
- 
+!     
   use M_data_types
-
-
+!
   implicit none
 
   real(dp), dimension(1:8):: photons, absorbed
- 
   real(dp), dimension(1:8):: absorbed_H, absorbed_HeI, absorbed_HeII
 
-
   real(dp), dimension(:,:,:), allocatable :: photons_freq_source,&
-                                             photons_freq_source1                                     
+                                             photons_freq_source1  
 !
   real(dp), dimension(:,:), allocatable :: photons_freq, photons_freq1,&
                                            photons_old, photons_old1,&
@@ -47,7 +43,7 @@ contains
    use M_definitions,            only: num_sources, points
 !
    implicit none
-   !
+!
    integer:: errstat
 !================================================================================
 !   
@@ -58,10 +54,12 @@ contains
    if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
  end subroutine ALLOCATE_PHOTON_ARRAYS
  
-!================================================================================ 
+
+ 
+ !================================================================================ 
  subroutine PHOTON_ZERO(source_index)
 !
-!     Calculation of number of initial photons for source per frequency
+!    Calculation of number of initial photons for source per frequency
 !
 ! called by main program
 !   
@@ -75,8 +73,7 @@ contains
 !=================================================================================
 ! 
  photons=0
- 
-  
+!  
   do f=1,points-1
      do c =1,8
         photons_freq_source(source_index,f,c) = 4._dp*4._dp*nc_pi**2*&
@@ -101,8 +98,8 @@ contains
 !================================================================================
  subroutine SET_RAY_DIRECTIONS
 !
-!     Selects a random ray direction (required for MC description of diffuse
-!     radiation field.
+!    Selects a random ray direction (required for MC description of diffuse
+!    radiation field.
 !
 !  called by main program
 !   
@@ -145,7 +142,7 @@ contains
    use M_definitions,             only: x_max, y_max, z_max, diffuse_threshold,&
                                         l_cell, diffuse_random_rays,&
                                         x_min, y_min, z_min,points
-                                        
+!                                        
    use M_grid_memory,             only: ne, nh_complete,eta, j_nu, chi,&
                                         ray_directions, ray_octants
    use M_raysave,                 only: ray_cells, coord_sign
@@ -270,7 +267,7 @@ contains
    logical      :: exit_marker
 !
    real(dp), dimension(0:points-1,1:8):: tau
-
+!
 !===============================================================================
 !
    j_nu=0._dp
@@ -307,7 +304,7 @@ contains
                        (ray_cells(e,r)%y-y_min)) .le. y_max .and. &
                        abs(source_z(so)+coord_sign(3,c)*&
                        (ray_cells(e,r)%z-z_min)) .le. z_max)
-                     
+!                     
                      exit_marker=.false.
                      if (c_correct_on) then
                         length_sum=length_sum+ray_cells(e,r)%length*nc_parsec
@@ -329,7 +326,7 @@ contains
                           f)*nc_parsec*length_calc
                      if (o_write_escape_fraction)&
                           totaltau(r,c,f)=totaltau(r,c,f)+tau(f,c)
-                     
+!                     
                      absorbed_freq(f,c)=photons_freq(f,c)*(1-exp(-tau(f,c)))
                      photons_freq(f,c)= photons_freq(f,c)*exp(-tau(f,c))
                      if ((chi(&
@@ -337,7 +334,7 @@ contains
                           source_y(so)+coord_sign(2,c)*(ray_cells(e,r)%y-y_min),&
                           source_z(so)+coord_sign(3,c)*(ray_cells(e,r)%z-z_min)&
                           ,f)) .ne. 0) then
-!                        !$OMP ATOMIC  
+!                       !$OMP ATOMIC  
                         j_nu(source_x(so)+coord_sign(1,c)*&
                              (ray_cells(e,r)%x-x_min),&
                              source_y(so)+coord_sign(2,c)*&
@@ -376,7 +373,7 @@ contains
       end do                         ! end of threads
       !$OMP END DO
       !$OMP END PARALLEL
-      
+!      
       if (o_write_escape_fraction) then   
          !$OMP PARALLEL PRIVATE(c,r)
          !$OMP DO
@@ -392,18 +389,6 @@ contains
          !$OMP END PARALLEL
       end if
    end do                            !end of sources
-!   do t=0, num_threads-1
-!      !        print*, "J_nu"
-!      do z=-z_max,+z_max
-!         do y=-y_max,+y_max
-!            do x=-x_max, +x_max
-!               do frequencycounter=0, points-1
-!!            j_nu(x,y,z,f)=j_nu(x,y,z,f)+j_nu_copy(x,y,z,f,t)
-!               end do
-!            end do
-!         end do
-!      end do
-!   end do
  end subroutine GET_J
  
 
@@ -446,7 +431,7 @@ contains
 !
    integer::  ynotflipped
 !================================================================================
-
+!
    if (ynotflipped .ge. -y_max) then
       flip_y= -y_max+mod(ynotflipped+y_max, 2*y_max+1)
    else
@@ -477,14 +462,15 @@ contains
       flip_z =  mod(znotflipped+z_max+1, 2*z_max+1)+z_max
    end if
  end function FLIP_Z
+
  
  
 !================================================================================ 
  subroutine GET_J_PERIODIC
 !
-! Radiative transfer for periodic boundary conditions
+!    Radiative transfer for periodic boundary conditions
 !
-! called by main program
+!  called by main program
 !
    use M_definitions,           only: x_max, y_max, z_max, x_min, y_min, z_min,&
                                       source_x, source_y, source_z,&
@@ -492,7 +478,7 @@ contains
                                       num_sources, t_all, t_step,&
                                       start_activity, lifetime, num_threads,&
                                       points, o_write_escape_fraction
-   
+!   
    use M_natural_constants,     only: nc_pi, nc_light, nc_parsec
    use M_grid_memory,           only: j_nu, xj_abs, chi
    use M_raysave,               only: escapefraction,totaltau, rays,&
@@ -517,12 +503,11 @@ contains
           (t_all+t_step)/31557600._dp .gt. start_activity(so)+lifetime(so)) cycle
      if (allocated(totaltau))&
           totaltau=0._dp
-
+!
 !$OMP PARALLEL DEFAULT(SHARED)  PRIVATE&
 !$OMP (errstat,r,c,f,e,length_sum,tau, absorbed_freq, photons_freq,&
 !$OMP                                    length_calc, exit_marker)
 !$OMP DO
-
      do t=0, num_threads-1
         allocate(photons_freq(0:points,1:8), stat=errstat)
         if (errstat .ne. 0) stop 'error allocating photons_freq'
@@ -564,7 +549,7 @@ contains
                          (ray_cells(e,r)%z-z_min)),f)*nc_parsec*length_calc
                     if (o_write_escape_fraction)&
                          totaltau(r,c,f)=totaltau(r,c,f)+tau(f,c)
-                    
+!                    
                     absorbed_freq(f,c)=photons_freq(f,c)*(1-exp(-tau(f,c)))
                     photons_freq(f,c)= photons_freq(f,c)*exp(-tau(f,c))
                     if ((chi(flip_x( source_x(so)+coord_sign(1,c)*&
@@ -573,8 +558,7 @@ contains
                          (ray_cells(e,r)%y-y_min)),&
                          flip_z(source_z(so)+coord_sign(3,c)*&
                          (ray_cells(e,r)%z-z_min)),f)) .ne. 0) then
-
-                       
+!                      
                        j_nu(flip_x(source_x(so)+coord_sign(1,c)*&
                             (ray_cells(e,r)%x-x_min)),&
                             flip_y(source_y(so)+coord_sign(2,c)*&
@@ -630,18 +614,6 @@ contains
 !$OMP END PARALLEL
      end if
   end do                            !end of sources
-!  do t=0, num_threads-1
-!     !        print*, "J_nu"
-!     do z=-z_max,+z_max
-!        do y=-y_max,+y_max
-!           do x=-x_max, +x_max
-!              do frequencycounter=0, points-1
-!                    j_nu(x,y,z,f)=j_nu(x,y,z,f)+j_nu_copy(x,y,z,f,t)
-!              end do
-!           end do
-!        end do
-!     end do
-!  end do
 end  subroutine GET_J_PERIODIC
 
 end module M_absorption

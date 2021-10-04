@@ -1,4 +1,5 @@
-program makelexington
+program MAKELEXINGTON
+  
 ! Creates the inittial conditions for some of the tests presened in 
 ! Pequignot et al. 2001  (2001ASPC..247..533P)
   use M_data_types
@@ -10,9 +11,9 @@ program makelexington
   integer(i4b)  :: no_of_args
   integer(i4b)         :: mainmenuid, x_max_global
   character(len=20)   ::  selectionstring,  x_max_string
+!
   no_of_args=command_argument_count()
-  
-
+!  
   if (no_of_args .eq. 2) then
      is_batch=.true.
      call get_command_argument(1,selectionstring)
@@ -77,8 +78,8 @@ program makelexington
           ("0.00_1001.S.txt", x_max, 0.97_dp, 5._dp, 0.0009_dp, 4)
 
 ! There is no Argon included in the HII-40 Lexington testcase, but occup_3d_ext
-!  needs a file containing the density dructure of argon. Thus it is set to
-!  a (hopefully) negligible value
+! needs a file containing the density dructure of argon. Thus it is set to
+! a (hopefully) negligible value
      call write_abundances&
           ("0.00_1001.Ar.txt", x_max, 0.97_dp, 5._dp , 1e-10_dp, 4)
      call write_abundances&

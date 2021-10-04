@@ -31,29 +31,38 @@ module M_mathematics
   use M_data_types
   use M_natural_constants
 contains
-!
+  !
+!==============================================================================  
   real(dp) function col_fs_cooling  &
        (TEMPERATURE, ELECTRONDENSITY, LAMBDA, YPSILON, OMEGA2, CRIT)
     IMPLICIT NONE
     real(dp) :: ELECTRONDENSITY, TEMPERATURE,LAMBDA, YPSILON, OMEGA2, CRIT
+!==============================================================================    
     col_fs_cooling=&
          ELECTRONDENSITY*8.629e-6/sqrt(temperature)*YPSILON/OMEGA2*&
          EXP(-(nc_planck*nc_light/(LAMBDA*1e-8))  / (nc_boltzmann*TEMPERATURE))/&
          ((ELECTRONDENSITY+CRIT)/CRIT)*(nc_planck*nc_light/(LAMBDA*1e-8))
   end function col_fs_cooling
-!
+
+  
+
+!==============================================================================  
   real(dp) function recombination_line (TEMPERATURE, ELECTRONDENSITY,A,B)
     implicit none
     real(dp)::temperature, electrondensity,a,b
+!==============================================================================    
     recombination_line=electrondensity*10**(a+b*log10(TEMPERATURE))
   end function recombination_line
-!
+
+  
+
+!==============================================================================  
   real(dp) function maskedvalue(inputvalue,testvalue,lowerlimit)
 ! only relevant values (above a threshold for the emission measure)
 ! should be plotted   
     implicit none
     real(dp):: inputvalue, testvalue, lowerlimit
-!
+!==============================================================================
     if (testvalue .lt. lowerlimit) then
        maskedvalue=-1E-30_dp              ! Very small negaive value
                                           ! The exact value does not have any
@@ -2953,4 +2962,4 @@ call close_output_files
    end subroutine write_max_emission_data_z
 
 
-end program nebular_statistics
+end program NEBULAR_STATISTICS

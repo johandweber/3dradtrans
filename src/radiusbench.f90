@@ -1,16 +1,18 @@
 PROGRAM radiusbench
 
+  use M_data_types
+  
   implicit none
 
-  integer:: xrange, yrange, zrange
-  integer:: midx, midy, midz
-  integer:: x, y, z
-  integer:: xsource, ysource, zsource
-  integer:: argument_counter
+  integer(i4b):: xrange, yrange, zrange
+  integer(i4b):: midx, midy, midz
+  integer(i4b):: x, y, z
+  integer(i4b):: xsource, ysource, zsource
+  integer(i4b):: argument_counter
   character(len=3000) :: infile, outfile, distancename,datacolsname, xs, ys, zs  
-  double precision:: distance
-  double precision, dimension (1:5) ::data
-  integer:: datacols
+  real(dp):: distance
+  real(dp), dimension (1:5) ::data
+  integer(i4b):: datacols
 
   argument_counter=command_argument_count()
 
@@ -27,8 +29,7 @@ PROGRAM radiusbench
   call get_command_argument(5, zs)
   call get_command_argument(6, infile)
   call get_command_argument(7, outfile)
-  
-  
+!   
   open(unit=1, file=trim(infile))
   open(unit=2, file=trim(outfile))
   read(distancename,*) distance
@@ -36,14 +37,12 @@ PROGRAM radiusbench
   read(xs,*) xsource
   read(ys,*) ysource
   read(zs,*) zsource
-
-
+!
   read(1,*) xrange, yrange, zrange
   midx=(xrange+1)/2
   midy=(yrange+1)/2
   midz=(zrange+1)/2
-
-
+!
   select case (datacols)
      case (0)
         do z=1, zrange
@@ -126,10 +125,11 @@ PROGRAM radiusbench
            end select
   close(1)
   close(2)
-  
+!  
   stop
 
   contains
+
     function get_distance(cellsize, deltax, deltay, deltaz)
       implicit none
       double precision:: get_distance

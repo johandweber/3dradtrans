@@ -25,7 +25,7 @@ program continua
 !=============================================================================
 !
   call load_parameters
-
+!
   do source_counter=1,num_sources
      call input(spectra(source_counter))
      write(*,*) "source #", source_counter
@@ -43,8 +43,9 @@ program continua
              spectrum, R_RS(source_counter))
      end do
   end do
-  
+!  
   contains
+
     
     subroutine write_stellar_continua(lambda, no_of_wl, lambda_grid ,H, radius)
       implicit none
@@ -59,6 +60,7 @@ program continua
       write(*,*) 'stellar continuum luminosity in erg s^-1 A^-1  :'
     end subroutine write_stellar_continua
 
+    
     real(dp) function calc_stellar_continuum&
             (lambda, lambda_grid, no_of_wl, H, radius)
       implicit none

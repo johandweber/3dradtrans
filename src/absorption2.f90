@@ -20,12 +20,10 @@ module M_absorption
   implicit none
 
   real(dp), dimension(1:8):: photons, absorbed
- 
   real(dp), dimension(1:8):: absorbed_H, absorbed_HeI, absorbed_HeII
-
-
+!
   real(dp), dimension(:,:,:), allocatable :: photons_freq_source,&
-                                             photons_freq_source1                                     
+                                             photons_freq_source1 
 !
   real(dp), dimension(:,:), allocatable   :: photons_freq, photons_freq1,&
                                              photons_old, photons_old1,&
@@ -45,8 +43,8 @@ contains
 !================================================================================
   subroutine ALLOCATE_PHOTON_ARRAYS
 !
-!    Allocated the arrays required for the description of the
-!    energy distributions of the sources
+!     Allocated the arrays required for the description of the
+!     energy distributions of the sources
 !
 ! called by main program
 ! 
@@ -59,17 +57,20 @@ contains
 !   
    allocate(photons_freq_source(1:num_sources, 1:points, 1:8),stat=errstat)
    if (errstat .ne. 0) stop 'error allocating photons_freq_source'
-   
+!   
    allocate(photons_freq_source1(1:num_sources, 1:points, 1:8),stat=errstat)
    if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
+!
  end subroutine ALLOCATE_PHOTON_ARRAYS
+
+
  
 !================================================================================ 
  subroutine PHOTON_ZERO(source_index)
 !
-!     Calculation of number of initial photons for source per frequency
+!    Calculation of number of initial photons for source per frequency
 !
-! called by main program
+!  called by main program
 !   
    use M_natural_constants,      only: nc_light, nc_pi, nc_planck
    use M_definitions,            only: r_rs, points
@@ -81,8 +82,7 @@ contains
 !=================================================================================
 ! 
  photons=0
- 
-  
+!   
   do f=1,points-1
      do c =1,8
         photons_freq_source(source_index,f,c) = 4._dp*4._dp*nc_pi**2*&
@@ -99,7 +99,6 @@ contains
            +photons_freq_source1(source_index,f+1,c))/2._dp*weights_nu(f) 
     end do
    end do
-!     print*, "photons", photons(3)       
  end subroutine PHOTON_ZERO
 
 
@@ -107,8 +106,8 @@ contains
 !================================================================================
  subroutine SET_RAY_DIRECTIONS
 !
-!     Selects a random ray direction (required for MC description of diffuse
-!     radiation field.
+!    Selects a random ray direction (required for MC description of diffuse
+!    radiation field.
 !
 !  called by main program
 !   
@@ -226,8 +225,7 @@ contains
                      else
                         j_nu(x+coord_sign(1,c)*(ray_cells(e,r)%x-x_min),&
                              y+coord_sign(2,c)*(ray_cells(e,r)%y-y_min),&
-                             z+coord_sign(3,c)*(ray_cells(e,r)%z-z_min),f)=0
-                        
+                             z+coord_sign(3,c)*(ray_cells(e,r)%z-z_min),f)=0                      
                      end if
                      e=e+1
                   end do
@@ -251,7 +249,7 @@ contains
 !    If there is no case-B assumption, DIFFUISE_FIELD has to be called
 !    separately
 !
-!   called by main program
+!  called by main program
 !
    use M_natural_constants,   only: nc_pi, nc_light, nc_parsec
    use M_definitions,         only: x_max, y_max, z_max,x_min, y_min, z_min,&
@@ -290,7 +288,7 @@ contains
       if (errstat .ne. 0) stop 'error allocating photons_freq'
       allocate(absorbed_freqt(0:points,1:8,0:num_threads-1))
       if (errstat .ne. 0) stop 'error allocating absorbned_freq'
-
+!
       !$OMP PARALLEL DEFAULT(SHARED)&
       !$OMP PRIVATE (errstat,r,c,f,e,length_sum,tau,&
       !$OMP          local_x, local_y, local_z, length_calc, exit_marker)
@@ -486,11 +484,10 @@ contains
       if (allocated(totaltau))&
            totaltau=0._dp
       
-!$OMP PARALLEL DEFAULT(SHARED)  PRIVATE&
-!$OMP (errstat,r,c,f,e,length_sum,tau, absorbed_freq, photons_freq,&
-!$OMP                                    length_calc, exit_marker)
-!$OMP DO
-
+      !$OMP PARALLEL DEFAULT(SHARED)  PRIVATE&
+      !$OMP (errstat,r,c,f,e,length_sum,tau, absorbed_freq, photons_freq,&
+      !$OMP                                    length_calc, exit_marker)
+      !$OMP DO
       do t=0, num_threads-1
          allocate(photons_freq(0:points,1:8), stat=errstat)
          if (errstat .ne. 0) stop 'error allocating photons_freq'
@@ -540,9 +537,7 @@ contains
                           flip_y(source_y(so)+coord_sign(2,c)*&
                           (ray_cells(e,r)%y-y_min)),&
                           flip_z(source_z(so)+coord_sign(3,c)*&
-                          (ray_cells(e,r)%z-z_min)),f)) .ne. 0) then
-                        
-                        
+                          (ray_cells(e,r)%z-z_min)),f)) .ne. 0) then                                !               
                         j_nu(flip_x(source_x(so)+coord_sign(1,c)*&
                              (ray_cells(e,r)%x-x_min)),&
                              flip_y(source_y(so)+coord_sign(2,c)*&
@@ -579,13 +574,13 @@ contains
          deallocate (photons_freq)
          deallocate (absorbed_freq)
       end do                         ! end of threads
-!$OMP END DO
-!$OMP BARRIER
-!$OMP END PARALLEL
+      !$OMP END DO
+      !$OMP BARRIER
+      !$OMP END PARALLEL
 !
       if (o_write_escape_fraction) then   
-!$OMP PARALLEL PRIVATE(c,r)
-!$OMP DO
+         !$OMP PARALLEL PRIVATE(c,r)
+         !$OMP DO
          do f=1,points-1
             do c=1,8
                do r=0, rays-1
@@ -594,27 +589,18 @@ contains
                end do
             end do
          end do
-!$OMP END DO
-!$OMP END PARALLEL
+         !$OMP END DO
+         !$OMP END PARALLEL
       end if
    end do                            !end of sources
-!  do t=0, num_threads-1
-!     !        print*, "J_nu"
-!     do z=-z_max,+z_max
-!        do y=-y_max,+y_max
-!           do x=-x_max, +x_max
-!              do frequencycounter=0, points-1
-!                    j_nu(x,y,z,f)=j_nu(x,y,z,f)+j_nu_copy(x,y,z,f,t)
-!              end do
-!           end do
-!        end do
-!     end do
-!  end do
- end  subroutine GET_J_PERIODIC
+ end subroutine GET_J_PERIODIC
 
 
+ 
 !==============================================================================
  subroutine GET_J_SPHERICAL
+!    Computes J for the spherically-symmetric case
+!    Has yet to be implemented... 
    use M_definitions,       only: points
    implicit none
    integer(i4b)                :: f ! local frequency counter
@@ -628,7 +614,8 @@ contains
 
 !==============================================================================
  real(dp) function spherical_shell(rinner,router)
-!
+!    Compoutes the volume of a spherical shell
+!    Has yet to be implemented
    use M_natural_constants, only: nc_pi, nc_parsec
 !
    implicit none

@@ -128,7 +128,7 @@ module M_output
           write(150,*)(2*x_max+1),(2*y_max+1),(2*z_max+1)
           write(151,*)(2*x_max+1),(2*y_max+1),(2*z_max+1)
        end if
-
+!
        if (log_heating_cooling) then
           write(200,*) (2*x_max+1),(2*y_max+1), (2*z_max+1)
           write(201,*) (2*x_max+1),(2*y_max+1), (2*z_max+1)
@@ -141,10 +141,10 @@ module M_output
           write(207,*) (2*x_max+1),(2*y_max+1), (2*z_max+1)
           write(208,*) (2*x_max+1),(2*y_max+1), (2*z_max+1)
        end if
-
+!
        if (o_thermal_pressure)&
             write(300,*) (2*x_max+1),(2*y_max+1), (2*z_max+1)
-     
+!     
        do z=-z_max,z_max
           do y=-y_max,y_max
              do x=-x_max,x_max
@@ -179,7 +179,7 @@ module M_output
                    write(113,ifrit_formatstring(Arions)) nAr(x, y, z,1:Arions),&
                         nAr(x, y, z,0)
                 end if
-              
+!              
                 if (compute_temperature .and. rep .ge. 2) then
                    write(150,'(3ES15.6E3)') temperature(x, y, z),&
                         temperature_old(x, y, z),&
@@ -276,6 +276,7 @@ module M_output
   end if
 
 contains
+
   character (len=11) function ifrit_formatstring (nion)
     implicit none
     integer(i4b)::  nion
@@ -449,8 +450,7 @@ end subroutine WRITE_IFRIT
        end if
 
        if (o_thermal_pressure)&
-            write(300) (2*x_max+1),(2*y_max+1), (2*z_max+1)
-       
+            write(300) (2*x_max+1),(2*y_max+1), (2*z_max+1)       
 !
        write(105) nHIf
        write(105) nH_completef-nHIf
@@ -476,7 +476,7 @@ end subroutine WRITE_IFRIT
 !
           write(113) nArf(:,:,:,1:Arions), nArf(:,:,:,0)
        end if
-              
+!              
        if (compute_temperature .and. rep .ge. 2) then
           write(150) temperaturef
           write(150) temperature_oldf
@@ -523,7 +523,7 @@ end subroutine WRITE_IFRIT
           write(208) cool_Arf
           write(208) 0._sp*cool_Arf- cool_fff
        end if
-       
+!       
        if (o_thermal_pressure)&
             write(300) thermal_pressuref   
        close(105)
@@ -550,7 +550,7 @@ end subroutine WRITE_IFRIT
           close(207)
           close(208)
        end if
-       !    
+ !    
        if (o_thermal_pressure)&
             close(300)
 !
@@ -590,7 +590,7 @@ end subroutine WRITE_IFRIT
 !
     subroutine convert_to_float
       implicit none
-
+!      
       nef=real(ne,sp)
 !      
       nHIf=real(nHI,sp)

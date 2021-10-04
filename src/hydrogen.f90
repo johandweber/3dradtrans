@@ -3824,9 +3824,9 @@ end subroutine calc_oxygen
 !===============================================================================
 !    
     expansion=(redshift_old+1)/(redshift+1)
-    
+!    
     l_cell=l_cell*expansion
-    
+!   
     nH_complete=nH_complete/expansion**3
     ne=ne/expansion**3
     nHI=nHI/expansion**3
@@ -3835,7 +3835,7 @@ end subroutine calc_oxygen
     nHeII=nHeII/expansion**3
     nHeIII=nHeIII/expansion**3
     nHe_complete=nHe_complete/expansion**3
-    
+!    
     if (include_metals)then
        nC=nC/expansion**3
        nN=nN/expansion**3
@@ -3843,7 +3843,7 @@ end subroutine calc_oxygen
        nNe=nNe/expansion**3
        nS=nS/expansion**3
     end if
-    
+!    
     redshift_old=redshift
   end subroutine  EXPAND_SPACE
   
