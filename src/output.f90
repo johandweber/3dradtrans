@@ -712,7 +712,9 @@ subroutine CREATE_LOGFILE
 !
   close(3)
   end subroutine CREATE_LOGFILE
-!
+
+
+  
 !==============================================================================
   subroutine LOG_ITERATION_STEP
 !
@@ -799,7 +801,10 @@ subroutine CREATE_LOGFILE
      end select
     
    end function log_formatstring
-  end subroutine LOG_ITERATION_STEP
+ end subroutine LOG_ITERATION_STEP
+
+
+ 
   
 !===============================================================================
   subroutine PARTICLES(string)

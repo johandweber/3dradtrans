@@ -197,7 +197,8 @@ module M_grid_memory
 !
 !  called by main program
 !
-      use M_definitions   , only: spherical, x_max, y_max, z_max, rp_max,&
+      use M_definitions   , only: spherical_case_A, spherical_case_B,&
+                                  x_max, y_max, z_max, rp_max,&
                                   num_threads, points, log_heating_cooling,&
                                   include_metals,&
                                   diffuse, diffuse_random_rays,&
@@ -213,11 +214,11 @@ module M_grid_memory
       integer:: errstat=0
 !===============================================================================      
 !
-      if (spherical) then        ! remapping the spherical coordinates to the
-                                 ! Cartesian ones 
+!     remapping the spherical coordinates to the Cartesian ones 
+      if (spherical_case_A .or. spherical_case_B) then  
          x_max=0
          y_max=0
-         z_max=rp_max
+         z_max= (rp_max - 1)/2
       end if
 !
       allocate (ne(-x_max:+x_max,-y_max:+y_max,-z_max:+z_max), stat=errstat)
@@ -709,7 +710,7 @@ contains
 
 
 !=============================================================================== 
-  double precision function AGETOZ (age, omega_m, H_0)
+  real(dp) function AGETOZ (age, omega_m, H_0)
 !
 !   Converts worldage (since Big Bang) into redshift
 !
@@ -718,9 +719,9 @@ contains
     use M_natural_constants,        only: nc_km, nc_megaparsec, nc_gyr
 !
   implicit none
-    double precision:: age, age_copy, omega_m, H_0, H_0_copy
-    double precision:: omega_lambda, scalefactor
-    double precision:: z
+    real(dp):: age, age_copy, omega_m, H_0, H_0_copy
+    real(dp):: omega_lambda, scalefactor
+    real(dp):: z
 !================================================================================
 !
     omega_lambda=1.0d0-omega_m

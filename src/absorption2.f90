@@ -48,18 +48,28 @@ contains
 !
 ! called by main program
 ! 
-   use M_definitions,            only: num_sources, points
+    use M_definitions,            only: num_sources, points, spherical_case_A,&
+                                        spherical_case_B
 !
    implicit none
    !
    integer:: errstat
 !================================================================================
+!
+!  Subdividing into octants does not make sense in the spherical case   
+   if (spherical_case_A .or. spherical_case_B) then
+      allocate(photons_freq_source(1:num_sources, 1:points, 1:1),stat=errstat)
+      if (errstat .ne. 0) stop 'error allocating photons_freq_source'
 !   
-   allocate(photons_freq_source(1:num_sources, 1:points, 1:8),stat=errstat)
-   if (errstat .ne. 0) stop 'error allocating photons_freq_source'
+      allocate(photons_freq_source1(1:num_sources, 1:points, 1:1),stat=errstat)
+      if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
+   else
+      allocate(photons_freq_source(1:num_sources, 1:points, 1:8),stat=errstat)
+      if (errstat .ne. 0) stop 'error allocating photons_freq_source'
 !   
-   allocate(photons_freq_source1(1:num_sources, 1:points, 1:8),stat=errstat)
-   if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
+      allocate(photons_freq_source1(1:num_sources, 1:points, 1:8),stat=errstat)
+      if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
+   endif
 !
  end subroutine ALLOCATE_PHOTON_ARRAYS
 
@@ -73,31 +83,49 @@ contains
 !  called by main program
 !   
    use M_natural_constants,      only: nc_light, nc_pi, nc_planck
-   use M_definitions,            only: r_rs, points
+   use M_definitions,            only: r_rs, points,&
+                                       spherical_case_A, spherical_case_B
    use M_data_input,             only: nug, nug_spect, weights_nu
 !
  implicit none
 !
-   integer(i4b) :: f, c ,source_index
+ integer(i4b) :: f, c ,source_index
+
+ !--- MOD: JWEBER 2021.09
 !=================================================================================
 ! 
  photons=0
 !   
-  do f=1,points-1
-     do c =1,8
-        photons_freq_source(source_index,f,c) = 4._dp*4._dp*nc_pi**2*&
-             (R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
-             nc_planck*nug(f)
-        photons_freq_source1(source_index,f+1, c) = 4._dp*4._dp*nc_pi**2&
-             *(R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
-             nc_planck*nug(f+1)
-        
-      print*, "photon_zero",nc_light/nug_spect(f)*1E+8,4._dp*&
-           (4._dp*nc_pi**2*(R_RS(source_index)*6.9599E+10_dp)**2*&
-           nug_spect(f))*nc_planck*nug_spect(f)
-      photons(c)=photons(c)+(photons_freq_source(source_index,f,c)&
-           +photons_freq_source1(source_index,f+1,c))/2._dp*weights_nu(f) 
-    end do
+ do f=1,points-1
+    if (spherical_case_A .or. spherical_case_B) then
+       photons_freq_source(source_index,f,1) = 4._dp*4._dp*nc_pi**2*&
+            (R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
+            nc_planck*nug(f)
+       photons_freq_source1(source_index,f+1, 1) = 4._dp*4._dp*nc_pi**2&
+            *(R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
+            nc_planck*nug(f+1)
+!         
+       print*, "photon_zero",nc_light/nug_spect(f)*1E+8,4._dp*&
+            (4._dp*nc_pi**2*(R_RS(source_index)*6.9599E+10_dp)**2*&
+            nug_spect(f))*nc_planck*nug_spect(f)
+       photons(1)=photons(1)+(photons_freq_source(source_index,f,1)&
+            +photons_freq_source1(source_index,f+1,1))/2._dp*weights_nu(f)       
+    else
+       do c =1,8
+          photons_freq_source(source_index,f,c) = 4._dp*4._dp*nc_pi**2*&
+               (R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
+               nc_planck*nug(f)
+          photons_freq_source1(source_index,f+1, c) = 4._dp*4._dp*nc_pi**2&
+               *(R_RS(source_index)*6.9599E+10_dp)**2*nug_spect(f)*&
+               nc_planck*nug(f+1)
+!          
+          print*, "photon_zero",nc_light/nug_spect(f)*1E+8,4._dp*&
+               (4._dp*nc_pi**2*(R_RS(source_index)*6.9599E+10_dp)**2*&
+               nug_spect(f))*nc_planck*nug_spect(f)
+          photons(c)=photons(c)+(photons_freq_source(source_index,f,c)&
+               +photons_freq_source1(source_index,f+1,c))/2._dp*weights_nu(f)          
+       end do
+    endif
    end do
  end subroutine PHOTON_ZERO
 
@@ -336,7 +364,7 @@ contains
                      absorbed_freqt(f,c,t)=photons_freqt(f,c,t)*(1-exp(-tau(f,c)))
                      photons_freqt(f,c,t)= photons_freqt(f,c,t)*exp(-tau(f,c))
                      if ((chi(local_x,local_y, local_z,f)) .ne. 0) then
-                        !                        !$OMP ATOMIC  
+ !                        !$OMP ATOMIC  
                         j_nu(local_x, local_y, local_z,f)=&
                              j_nu(local_x,local_y,local_z,f)+&
                              absorbed_freqt(f,c,t)/&
@@ -372,6 +400,7 @@ contains
       end if
 !
    end do                            ! end of sources
+   
  end subroutine GET_J
  
 !================================================================================ 
@@ -598,20 +627,101 @@ contains
 
  
 !==============================================================================
- subroutine GET_J_SPHERICAL
+ subroutine GET_J_SPHERICAL_CASE_B
 !    Computes J for the spherically-symmetric case
-!    Has yet to be implemented... 
-   use M_definitions,       only: points
+!
+   use M_definitions,           only: x_max, y_max, z_max, x_min, y_min, z_min,&
+                                      source_x, source_y, source_z,&
+                                      c_correct_on, l_cell,&
+                                      num_sources, t_all, t_step,&
+                                      start_activity, lifetime, num_threads,&
+                                      points, o_write_escape_fraction
+   
+   use M_natural_constants,     only: nc_pi, nc_light, nc_parsec
+   use M_grid_memory,           only: j_nu, xj_abs, chi
+   use M_raysave,               only: escapefraction,totaltau, rays,&
+                                      ray_split, ray_cells, coord_sign,&
+                                      l_max
+!
    implicit none
-   integer(i4b)                :: f ! local frequency counter
-!==============================================================================
 !
-   do f=1, points-1
-      
-   end do   
+   integer(i4b) :: so,t,errstat,f,e,r,c
+   real(dp)     :: length_sum, length_calc
+   logical      :: exit_marker
 !
- end subroutine GET_J_SPHERICAL
+   real(dp), dimension(0:points-1,1:8):: tau
+   real(dp)    :: volume
+!================================================================================
+!
+   j_nu=0._dp
+   xj_abs=0._dp
+   length_sum=0._dp
+   if(allocated(escapefraction))&
+        escapefraction=0._dp
+!   
+   if ((t_all+t_step)/31557600._dp .lt. start_activity(1) .or.&
+        (t_all+t_step)/31557600._dp .gt. start_activity(1)+lifetime(1)) return
+   if (allocated(totaltau))&
+        totaltau=0._dp
+!   
+   allocate(photons_freq(0:points,1:1), stat=errstat)
+   if (errstat .ne. 0) stop 'error allocating photons_freq'
+   allocate(absorbed_freq(0:points,1:1))
+   if (errstat .ne. 0) stop 'error allocating absorbned_freq'
+   do f=1,points-1
+      photons_freq(f,1)=photons_freq_source(1,f,1)                 
+      do e = -z_max, +z_max
+         length_sum=0
+        if (c_correct_on) then
+            length_sum=length_sum+l_cell*nc_parsec
+            if (length_sum .gt. nc_light*&
+                 (t_all-start_activity(so))) then
+               exit
+            else
+               length_calc=l_cell*nc_parsec
+            end if
+         else
+            length_sum=length_sum+l_cell*nc_parsec
+            length_calc=l_cell*nc_parsec
+         end if
+         tau(f,1)=chi(0,0,e,f)*length_calc
+         if (o_write_escape_fraction)&
+              totaltau(1,1,f)=totaltau(1,1,f)+tau(f,e)
+!         
+         absorbed_freq(f,1)=photons_freq(f,1)*(1-exp(-tau(f,1)))
+         photons_freq(f,1)= photons_freq(f,1)*exp(-tau(f,1))
+         if (chi(0,0,e,f) .ne. 0) then   !
+            volume = (4._dp/3._dp)*nc_pi* (l_cell*nc_parsec)**3*&
+                 ( (e+z_max+1)**3 - (e+z_max)**3 )
+            j_nu(0,0,e,f)=&
+                 j_nu(0,0,e,f)+&
+                 absorbed_freq(f,1)/&
+                 (chi(0,0,e,f) * 4*nc_pi * volume)
+         else
+            j_nu(0,0,e,f)=0
+         end if
+      end do             ! end of raysegments
+   end do                ! end of frequency points
+   deallocate (photons_freq)
+   deallocate (absorbed_freq)
+!
+   if (o_write_escape_fraction) then   
+      do f=1,points-1
+         escapefraction(1,f)=escapefraction(1,f)*&
+              exp(-totaltau(0,0,f))
+      end do
+   end if              ! end of sources
+   
+ end subroutine GET_J_SPHERICAL_CASE_B
 
+!============================================================================== 
+ subroutine GET_J_SPHERICAL_CASE_A
+! outward-only: has to be implemented yet
+!=============================================================================   
+ end subroutine GET_J_SPHERICAL_CASE_A
+ 
+
+ 
 !==============================================================================
  real(dp) function spherical_shell(rinner,router)
 !    Compoutes the volume of a spherical shell

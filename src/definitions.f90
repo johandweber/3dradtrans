@@ -168,7 +168,10 @@ logical             :: o_write_escape_fraction      = .false.
 logical             :: outward_only                 = .false.
 logical             :: periodic                     = .false.
 logical             :: photoheat_metals             = .false.
-logical             :: spherical                    = .false.
+logical             :: spherical_case_A             = .false.
+logical             :: spherical_case_B             = .false.
+logical             :: planar_case_A                = .false.
+logical             :: planar_case_B                = .false.
 logical             :: trace_expansion              = .false.
 logical             :: verbose_stdout               = .false.
 logical             :: use_mask                     = .false.
@@ -401,8 +404,10 @@ namelist/input_values/&
      Nions, Ntosolar,NtoH,num_threads,o_abundan,o_external, o_rad_force,&
      o_thermal_pressure,o_write_escape_fraction,old_solar_abundances,&
      omega_m,optabu_3d, Oions, Otosolar,OtoH, outward_only,& 
-     periodic,photoheat_metals, read_from_file, rep_output,&
-     rp_max, start_ionized,Sions,source_filename, spherical,&
+     periodic,photoheat_metals, planar_case_A, planar_case_B,&
+     read_from_file, rep_output,&
+     rp_max, start_ionized,Sions,source_filename,&
+     spherical_case_A, spherical_case_B,&
      Stosolar,StoH, t_start,t_end, t_step_max,trace_expansion,use_mask,&
      verbose_stdout,x_max,y_max,z_max
 
@@ -466,7 +471,8 @@ contains
      read(2,*) num_sources
   end if
 !
-  if (spherical)&       ! In the spherical case, there is only one source
+! in the spherical case, there is only one source  
+  if (spherical_case_A .or. spherical_case_B)&  
        num_sources=1
 !
   allocate(source_x(1:num_sources), stat=errstat)  
@@ -484,10 +490,10 @@ contains
      stop 'fatal error: could not allocate source_z'
   end if
 !  
-  if (spherical) then
+  if (spherical_case_A .or. spherical_case_B ) then
      source_x(1) = 0
      source_y(1) = 0
-     source_z(1) = 0
+     source_z(1) = -z_max
   end if
 
   allocate(R_RS(1:num_sources), stat=errstat)
@@ -539,7 +545,7 @@ contains
  write(*,*) 'Number of sources' , num_sources
  write(*,*)
 !
- if (spherical) then
+ if (spherical_case_A .or. spherical_case_B) then
     write(*,*) 'R_RS  (solar radii) :', R_RS(1)
     write(*,*) 'spectrum :', trim(spectra(1))
     write(*,*) 'start_activity[yrs.] :', start_activity(1)

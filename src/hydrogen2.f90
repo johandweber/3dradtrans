@@ -270,12 +270,12 @@ end subroutine INITIALIZE_HEATING_POLY
        
 !
        if (include_metals) then
-          call initialize_Ions(nC,Cions,include_C,.true.)
-          call initialize_Ions(nN,Nions,include_N,.true.)
-          call initialize_Ions(nO,Oions,include_O,.true.)
-          call initialize_Ions(nNe,Neions,include_Ne,.true.)
-          call initialize_Ions(nS,Sions,include_S,.true.)
-          call initialize_Ions(nAr,Arions,include_Ar,.true.)
+          call initialize_Ions(nC,Cions,include_C,.false.)
+          call initialize_Ions(nN,Nions,include_N,.false.)
+          call initialize_Ions(nO,Oions,include_O,.false.)
+          call initialize_Ions(nNe,Neions,include_Ne,.false.)
+          call initialize_Ions(nS,Sions,include_S,.false.)
+          call initialize_Ions(nAr,Arions,include_Ar,.false.)
        end if
     end if
 !        
@@ -1929,7 +1929,7 @@ end subroutine INITIALIZE_HEATING_POLY
        end if
 !             
        if (nHeI(x,y,z) .lt. 0._dp) then     ! this should never happen
-          print*, "Particle conservation did not work properly !"
+          print*, "Particle conservation did not work properly!"
           print*,x,y,z
           print*,nHeI(x,y,z) 
           stop

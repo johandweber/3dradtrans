@@ -73,33 +73,36 @@ PROGRAM RADTRANS_3D
                                       spectra, o_thermal_pressure,&
                                       add_heating, extra_heating,&
                                       verbose_stdout, use_mask,&
-                                      binary_output, include_He
-  
+                                      binary_output, include_He,&
+                                      spherical_case_A, spherical_case_B
   use M_data_input            , ONLY: data_transform
   use M_raysave               , ONLY: allocate_rays
-  use M_grid_memory           , ONLY: allocate_grid, mask, NHeI, nHeII, nHeIII, nHe_complete
+  use M_grid_memory           , ONLY: allocate_grid, mask, NHeI, nHeII, nHeIII,&
+                                      nHe_complete, j_nu
   use M_geometry              , ONLY: init_geometry
-  use M_absorption            , ONLY: SET_RAY_DIRECTIONS,&
-                                      ALLOCATE_PHOTON_ARRAYS, PHOTON_ZERO,&
-                                      GET_J, GET_J_PERIODIC, DIFFUSE_FIELD
-  use M_hydrogen              , ONLY: INITIALIZE_ABUNDANCES,&
-                                      INITIALIZE_HYDROGEN_FROM_FILE,&
-                                      INITIALIZE_HYDROGEN, INITIALIZE_MASK,&
-                                      RESUME_COMPUTATION,&
-                                      RESUME_COMPUTATION_FROM_BINARY,&
-                                      UPDATE_CHI, UPDATE_ETA, CALC_HYDROGEN,&
-                                      CALC_HELIUM2, CALC_METALS, &
-                                      UPDATE_ELECTRON_DENSITY,&
-                                      INITIALIZE_HEATING_POLY,&
-                                      APPLY_ADD_HEATING,&
-                                      APPLY_EXTRA_HEATING_COOLING,&
-                                      UPDATE_THERMAL_PRESSURE,&
-                                      UPDATE_TEMPERATURE, EXPAND_SPACE,&
+  use M_absorption            , ONLY: set_ray_directions,&
+                                      allocate_photon_arrays, photon_zero,&
+                                      get_j, get_j_periodic,&
+                                      get_j_spherical_case_A,  get_j_spherical_case_B,&
+                                      diffuse_field
+  use M_hydrogen              , ONLY: initialize_abundances,&
+                                      initialize_hydrogen_from_file,&
+                                      initialize_hydrogen, initialize_mask,&
+                                      resume_computation,&
+                                      resume_computation_from_binary,&
+                                      update_chi, update_eta, calc_hydrogen,&
+                                      calc_helium2, calc_metals, &
+                                      update_electron_density,&
+                                      initialize_heating_poly,&
+                                      apply_add_heating,&
+                                      apply_extra_heating_cooling,&
+                                      update_thermal_pressure,&
+                                      update_temperature, expand_space,&
                                       rep
-  use M_output                 ,ONLY: WRITE_IFRIT, CREATE_LOGFILE,&
-                                      LOG_ITERATION_STEP,&
-                                      CALL_EXTERNAL_HC_PROGRAM,&
-                                      WRITE_IFRIT_BIN
+  use M_output                 ,ONLY: write_ifrit, create_logfile,&
+                                      log_iteration_step,&
+                                      call_external_hc_program,&
+                                      write_ifrit_bin
 !  
   implicit none
 !  
@@ -125,12 +128,17 @@ PROGRAM RADTRANS_3D
      call data_transform(spectra(i))
      call photon_zero(i)
   end do
+  print*, '==1'
 !
-  call allocate_rays
+  if ((.not. spherical_case_A) .and. (.not. spherical_case_B))&
+       call allocate_rays
+!  
   call allocate_grid
-  call init_geometry
-  call set_ray_directions
-
+!
+  if ((.not. spherical_case_A) .and. (.not. spherical_case_B)) then  
+     call init_geometry
+     call set_ray_directions
+  endif
 !
   call initialize_abundances
 !  
@@ -182,18 +190,22 @@ PROGRAM RADTRANS_3D
      end if
 !
      print*, "before get_j"
-     if (periodic) then
+     if (spherical_case_B) then
+        call get_j_spherical_case_b
+     elseif (spherical_case_A) then
+        stop 'The outward-only solution is not implemented yet.'
+     elseif (periodic) then
         call get_j_periodic
      else
         call get_j
      end if
-     write(*,*) "get_j"
 !
+     print*, "calc hydrogen"     
      if (diffuse) then 
         call diffuse_field
         write(*,*) "diffuse_ field"
      end if
-! 
+!
      call calc_hydrogen
      write(*,*) "calc_hydrogen"
 !
@@ -244,7 +256,11 @@ PROGRAM RADTRANS_3D
 
 !
      if (verbose_stdout) then
-        call log_iteration_step
+! Curtrently output of relative number densities and 
+! weighted temperatured does not work in the spherical case
+! Has to be added in the future !   
+        if ((.not. spherical_case_A) .and. (.not. spherical_case_B))&       
+             call log_iteration_step
         write(*,*) "log_iteration_step"
      end if
 !
