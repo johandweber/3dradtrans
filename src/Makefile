@@ -2,11 +2,6 @@
 ifeq ($(PLATFORM), linux_ifort)
 
 # Linux programs compiled with ifort, the Intel Fortran compiler.
-# For commercial purposes  or institutions like universities
-# ifort requires the purchase of a licence.
-# For private or educational purposes (students not funded
-# for their work) the Intel Liniux compilers can be compiled
-# for free.
 # Newer versions of the Intel fortran compiler packages
 # include the MKL library that includes the BLAS and
 # LAPACK routines. The MKL library is highly optimized for the
@@ -35,7 +30,8 @@ ifeq ($(PLATFORM), linux_ifort)
     LINKER   = ifort -static -O0
     DEBUG    = -g -fpe0 -warn all -traceback -debug extended -check all
   else
-    OPTIMIZE = -static -O3 -march=core-avx2   # Optimization switch for compiler
+# -march=core-avx2 means that AVX and AVX2 are supported
+    OPTIMIZE = -static -O3 #-march=core-avx2   # Optimization switch for compiler
     LINKER   = ifort -static -Ofast
     DEBUG    =
   endif
@@ -56,12 +52,7 @@ ifeq ($(PLATFORM), linux_ifort)
 #########################################################################
 else ifeq ($(PLATFORM), linux_ifx)
 
-# Linux programs compiled with ifort, the Intel Fortran compiler.
-# For commercial purposes  or institutions like universities
-# ifort requires the purchase of a licence.
-# For private or educational purposes (students not funded
-# for their work) the Intel Liniux compilers can be compiled
-# for free.
+# Linux programs compiled with ifx, the LLVM-based Intel Fortran compiler.
 # Newer versions of the Intel fortran compiler packages
 # include the MKL library that includes the BLAS and
 # LAPACK routines. The MKL library is highly optimized for the
@@ -70,6 +61,8 @@ else ifeq ($(PLATFORM), linux_ifx)
 # the descriptions of the platforms below)
 # The Makefile was tested using the bash shell. There may or may not be
 # problems with other shells.
+#
+# The support for IFX is not stable yet.
 
 
   OBJEXT   =.o  #     # Extension of object file
@@ -111,21 +104,12 @@ else ifeq ($(PLATFORM), linux_ifx)
 #########################################################################
 else ifeq ($(PLATFORM), linux_aocc)
 
-# Linux programs compiled with ifort, the Intel Fortran compiler.
-# For commercial purposes  or institutions like universities
-# ifort requires the purchase of a licence.
-# For private or educational purposes (students not funded
-# for their work) the Intel Liniux compilers can be compiled
-# for free.
-# Newer versions of the Intel fortran compiler packages
-# include the MKL library that includes the BLAS and
-# LAPACK routines. The MKL library is highly optimized for the
-# modern x86 compatible PCs and likely to be faster than libraries
-# compiled from the more generic code form netlib.org (see
-# the descriptions of the platforms below)
-# The Makefile was tested using the bash shell. There may or may not be
-# problems with other shells.
-
+# Linux programs compiled with AMD's flang Fortran compiler.
+# It is assumed that the BLIS library from the AOCL library collection
+# is present for the BLAS routines. For LAPACK the presence of a
+# linbapack is assumed.
+#
+# The support for this target is not stable yet.
 
   OBJEXT   =.o  #     # Extension of object file
   MODEXT   =.mod  #   # Extension of fortran module files
@@ -145,7 +129,7 @@ else ifeq ($(PLATFORM), linux_aocc)
     LINKER   = flang -static
     DEBUG    = -g -fpe0 -warn all -traceback -debug extended -check all
   else
-    OPTIMIZE =  -O3 -march=native #   # Optimization switch for compiler
+    OPTIMIZE =  -O3 #-march=native #   # Optimization switch for compiler
     LINKER   = flang -O3
     DEBUG    =
   endif
@@ -187,7 +171,9 @@ else ifeq ($(PLATFORM), linux_gfortran)
   NAMING   = -o #     # Option for giving the ouput file a certain name
   VERSION  = -v #     # Showing the version
   PROGRAM  = occup_3d_ext$(EXEXT) # name of the program
-  LAPACK = -lopenblas # -llapack -lblas
+
+# OpenBLAS is an alternative Library that contains both the BLAS and the LAPACK functions.
+  LAPACK =  -llapack -lblas # -lopenblas
   ifdef debug
     OPTIMIZE = -O0  # Optimization switch for compiler
     LINKER   = gfortran -O0
