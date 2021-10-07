@@ -35,6 +35,61 @@ ifeq ($(PLATFORM), linux_ifort)
     LINKER   = ifort -static -O0
     DEBUG    = -g -fpe0 -warn all -traceback -debug extended -check all
   else
+    OPTIMIZE = -static -O3 -march=core-avx2   # Optimization switch for compiler
+    LINKER   = ifort -static -Ofast
+    DEBUG    =
+  endif
+# if perfana is set (perfana=1), the option "-p" is used
+# for compilation and linking. In this case the program
+# supports profiling using the gprof tool.
+  ifdef perfana
+    GPROF   = -p
+  else
+    GPROF   =
+  endif
+  ECHO      = echo 
+  REMOVE    = rm -f # -f, because else there is an error when there
+                    # are no files (of  a certain pattern) to delete,
+                    # preventing the clean target to be completed
+
+
+#########################################################################
+else ifeq ($(PLATFORM), linux_ifx)
+
+# Linux programs compiled with ifort, the Intel Fortran compiler.
+# For commercial purposes  or institutions like universities
+# ifort requires the purchase of a licence.
+# For private or educational purposes (students not funded
+# for their work) the Intel Liniux compilers can be compiled
+# for free.
+# Newer versions of the Intel fortran compiler packages
+# include the MKL library that includes the BLAS and
+# LAPACK routines. The MKL library is highly optimized for the
+# modern x86 compatible PCs and likely to be faster than libraries
+# compiled from the more generic code form netlib.org (see
+# the descriptions of the platforms below)
+# The Makefile was tested using the bash shell. There may or may not be
+# problems with other shells.
+
+
+  OBJEXT   =.o  #     # Extension of object file
+  MODEXT   =.mod  #   # Extension of fortran module files
+  EXEEXT   = #        # Extension of executable file
+  COMPILER = ifx #  # Name of compiler
+  OPENMP   = -qopenmp # OpenMP switch(es)
+  NOLINK   = -c #     # Just compile, not link
+  NAMING   = -o #     # Option for giving the ouput file a certain name
+  VERSION  = -V #     # Showing the version
+  PROGRAM  = occup_3d_ext$(EXEXT) # name of the program
+  ifndef MKL_ROOT
+    MKL_ROOT = -mkl=parallel
+  endif
+  LAPACK = $(MKL_ROOT)
+  ifdef debug
+    OPTIMIZE = -static -O0 -g # Optimization switch for compiler
+    LINKER   = ifort -static -O0
+    DEBUG    = -g -fpe0 -warn all -traceback -debug extended -check all
+  else
     OPTIMIZE = -static -O3 #   # Optimization switch for compiler
     LINKER   = ifort -static -O3
     DEBUG    =
@@ -51,6 +106,63 @@ ifeq ($(PLATFORM), linux_ifort)
   REMOVE    = rm -f # -f, because else there is an error when there
                     # are no files (of  a certain pattern) to delete,
                     # preventing the clean target to be completed
+
+
+#########################################################################
+else ifeq ($(PLATFORM), linux_aocc)
+
+# Linux programs compiled with ifort, the Intel Fortran compiler.
+# For commercial purposes  or institutions like universities
+# ifort requires the purchase of a licence.
+# For private or educational purposes (students not funded
+# for their work) the Intel Liniux compilers can be compiled
+# for free.
+# Newer versions of the Intel fortran compiler packages
+# include the MKL library that includes the BLAS and
+# LAPACK routines. The MKL library is highly optimized for the
+# modern x86 compatible PCs and likely to be faster than libraries
+# compiled from the more generic code form netlib.org (see
+# the descriptions of the platforms below)
+# The Makefile was tested using the bash shell. There may or may not be
+# problems with other shells.
+
+
+  OBJEXT   =.o  #     # Extension of object file
+  MODEXT   =.mod  #   # Extension of fortran module files
+  EXEEXT   = #        # Extension of executable file
+  COMPILER = flang      # Name of compiler
+  OPENMP   = -fopenmp # OpenMP switch(es)
+  NOLINK   = -c #     # Just compile, not link
+  NAMING   = -o #     # Option for giving the ouput file a certain name
+  VERSION  = -V #     # Showing the version
+  PROGRAM  = occup_3d_ext$(EXEXT) # name of the program
+  ifndef MKL_ROOT
+    MKL_ROOT = -llapack -lblis
+  endif
+  LAPACK = $(MKL_ROOT)
+  ifdef debug
+    OPTIMIZE = -static -O0 -g # Optimization switch for compiler
+    LINKER   = flang -static
+    DEBUG    = -g -fpe0 -warn all -traceback -debug extended -check all
+  else
+    OPTIMIZE =  -O3 -march=native #   # Optimization switch for compiler
+    LINKER   = flang -O3
+    DEBUG    =
+  endif
+# if perfana is set (perfana=1), the option "-p" is used
+# for compilation and linking. In this case the program
+# supports profiling using the gprof tool.
+  ifdef perfana
+    GPROF   = -p
+  else
+    GPROF   =
+  endif
+  ECHO      = echo 
+  REMOVE    = rm -f # -f, because else there is an error when there
+                    # are no files (of  a certain pattern) to delete,
+                    # preventing the clean target to be completed
+
+
 
 #########################################################################
 
@@ -75,13 +187,14 @@ else ifeq ($(PLATFORM), linux_gfortran)
   NAMING   = -o #     # Option for giving the ouput file a certain name
   VERSION  = -v #     # Showing the version
   PROGRAM  = occup_3d_ext$(EXEXT) # name of the program
-  LAPACK = -llapack -lblas
+  LAPACK = -lopenblas # -llapack -lblas
   ifdef debug
     OPTIMIZE = -O0  # Optimization switch for compiler
     LINKER   = gfortran -O0
     DEBUG    = -g3 -Wall -pedantic  -fbacktrace  -fcheck=all -ffpe-trap=invalid,zero,overflow
   else
-    OPTIMIZE = -O3 #  # Optimization switch for compiler
+# If -march=native is commented in, the created binary may no longer work on other CPUs    
+    OPTIMIZE = -O3   -march=native   # Optimization switch for compiler
     LINKER   = gfortran
     DEBUG    =
   endif
@@ -160,6 +273,7 @@ else
     $(info Unknown platform or no platform specified.)
     $(info available platforms:)
     $(info PLATFORM=linux_ifort)
+    $(info PLATFORM=linux_ifx)
     $(info PLATFORM=linux_gfortran)
     $(info PLATFORM=windows_msys2_gfortran)
     $(error make process terminated)

@@ -1273,12 +1273,12 @@ end subroutine INITIALIZE_HEATING_POLY
    real(dp), dimension (nion, nion)       :: metalmatrix, metaleigenvectors,&
                                              metaleigenvectors_copy,&
                                              metalleftvectors, tempmatrix
-   real(dp), dimension (1:nion)           :: metalre, metalim, metal_start,&
-                                             metalpivots
+   real(dp), dimension (1:nion)           :: metalre, metalim, metal_start
    real(dp), dimension (1:nion)           :: ion_rate_M,recomb_rate_M,&
                                              heat_cool_M
    real(dp), dimension (-x_max:+x_max,-y_max:+y_max,-z_max:+z_max, 0:nion)&
-                                             :: nM
+                                          :: nM
+   integer(i4b), dimension(1:nion)        :: metalpivots
    real(dp), dimension (50)               :: work  
    integer(i4b),   dimension(1)           :: maxeig
    integer(i4b)                           :: info                 !for lapack
@@ -1311,8 +1311,8 @@ end subroutine INITIALIZE_HEATING_POLY
 !              
    metaleigenvectors_copy=metaleigenvectors
 !
-   call dgesv(nion,1,METALEIGENVECTORS_COPY,nion,METALPIVOTS,&
-              METAL_START,nion,INFO)
+   call dgesv(nion,1,metaleigenvectors_copy,nion,metalpivots,&
+              metal_start,nion,info)
 !       
    nM(x,y,z,:)=0._dp
 !       
@@ -1734,16 +1734,16 @@ end subroutine INITIALIZE_HEATING_POLY
                     recomb_rate_HeII, recomb_rate_HeIII,&
                     ne_old, heat_cool_HeI, heat_cool_HeII, heat_cool_HeIII
 !
-    real   (dp), dimension (3,3)   :: HELIUMMATRIX, HELIUMEIGENVECTORS
-    real   (dp), dimension (3,3)   :: HELIUMMATRIX_COPY, HELIUMEIGENVECTORS_COPY
-    real   (dp), dimension (3,3)   :: HELIUMLEFTVECTORS
-    real   (dp), dimension   (3)   :: HELIUMRE,HELIUMIM,HELIUM_START,&
-                                      HELIUM_START_OLD
-    real   (dp), dimension   (3)   :: HELIUM_OCCUP_OLD
-    integer (i4b), dimension (3)   :: HELIUMPIVOTS
-    integer (i4b), dimension (1)   :: MAXEIG
-    real   (dp), dimension  (50)   :: WORK 
-    integer (i4b)                  :: INFO, counter
+    real   (dp), dimension (3,3)   :: heliummatrix, heliumeigenvectors
+    real   (dp), dimension (3,3)   :: heliummatrix_copy, heliumeigenvectors_copy
+    real   (dp), dimension (3,3)   :: heliumleftvectors
+    real   (dp), dimension   (3)   :: heliumre,heliumim,helium_start,&
+                                      helium_start_old
+    real     (dp), dimension   (3) :: helium_occup_old
+    integer (i4b), dimension (3)   :: heliumpivots
+    integer (i4b), dimension (1)   :: maxeig
+    real     (dp), dimension  (50) :: work
+    integer (i4b)                  :: info, counter
     logical                        :: temperature_masked
 !===============================================================================
 !  
@@ -1884,8 +1884,8 @@ end subroutine INITIALIZE_HEATING_POLY
        helium_start_old(3)=helium_start(3)
 !                          
        heliumeigenvectors_copy=heliumeigenvectors
-       call dgesv(3,1,HELIUMEIGENVECTORS_COPY,3,HELIUMPIVOTS,&
-            HELIUM_START,3,INFO)
+       call dgesv(3,1,heliumeigenvectors_copy,3,heliumpivots,&
+                  helium_start,3,info)
 !             
        nHeI(x,y,z)=0._dp
        nHeII(x,y,z)=0._dp
@@ -3513,7 +3513,7 @@ end subroutine INITIALIZE_HEATING_POLY
     real(dp):: temperature
 !================================================================================
     recHeIII=exp(-16.89734798_dp-1.138766988_dp*log(temperature))
-  END FUNCTION recHeIII
+  end function recHeIII
 
 
 
@@ -3547,7 +3547,7 @@ end subroutine INITIALIZE_HEATING_POLY
 !================================================================================
 !
     radiative_rec0=alphaR10000*(T/10000)**(-0.8)
-  END FUNCTION RADIATIVE_REC0
+  end function RADIATIVE_REC0
 
 
 
@@ -3564,7 +3564,7 @@ end subroutine INITIALIZE_HEATING_POLY
 !================================================================================
     phi=(T/10000._dp)**(-0.4_dp)
     radiative_rec2=alphaR10000*sqrt(T/10000._dp)*(f+(1._dp-f)*phi)
-  END FUNCTION RADIATIVE_REC2
+  end function RADIATIVE_REC2
 
 
 
@@ -3812,17 +3812,17 @@ end subroutine INITIALIZE_HEATING_POLY
     !  called by CALC_HYDROGEN
     !
     !input
-  IMPLICIT NONE
+  implicit none
     !
-    REAL   (dp )  :: T
-    INTEGER(i4b)  :: N
+    real   (dp )  :: T
+    integer(i4b)  :: N
     !local
-    INTEGER(i4b)  :: I,J
-    REAL   (dp )  :: Q,S,A,X
-    REAL   (dp ), DIMENSION(31,7) :: C
+    integer(i4b)  :: I,J
+    real   (dp )  :: Q,S,A,X
+    real   (dp ), dimension(31,7) :: C
 !===============================================================================
 !
-    DATA ((C(I,J),J=1,7),I=1,31)/ &
+    data ((C(I,J),J=1,7),I=1,31)/ &
          1.0_dp,1.646E-11_dp,9.283E-11_dp,1.646E-11_dp,8.287E-11_dp,1.061E-11_dp,9.348E-11_dp,&
          1.2_dp,1.646E-11_dp,8.823E-11_dp,1.646E-11_dp,7.821E-11_dp,1.068E-11_dp,8.889E-11_dp,&
          1.4_dp,1.646E-11_dp,8.361E-11_dp,1.646E-11_dp,7.356E-11_dp,1.076E-11_dp,8.432E-11_dp,&
@@ -3860,32 +3860,32 @@ end subroutine INITIALIZE_HEATING_POLY
     X(A,I,J)=C(I,J)+A*(C(I+1,J)-C(I,J))
     !-------------------------------------------------------------------------
     !
-    Q=SQRT (T)
-    S=LOG10(T)
-    IF(S.GT.7.0.OR.S.LT.1.0) THEN
+    Q=sqrt (T)
+    S=log10(T)
+    if(S.gt.7.0.or.S.lt.1.0) then
        print*,T,S,log10(T)
-       STOP 'HYDREC: Temperature out of range'
-    END IF
-    DO I=1,30
-       IF(S.GE.C(I,1).AND.S.LE.C(I+1,1)) GOTO 1
-    END DO
-    STOP 'HYDREC: Unexpected error'
-1   CONTINUE
+       stop 'HYDREC: Temperature out of range'
+    end if
+    do I=1,30
+       if(S.ge.C(I,1).and.S.le.C(I+1,1)) goto 1
+    end do
+    stop 'HYDREC: Unexpected error'
+1   continue
     A=(S-C(I,1))/(C(I+1,1)-C(I,1))
-    IF    (N.EQ.1) THEN
+    if    (N.eq.1) then
        HYDREC=(X(A,I,2)+X(A,I,3))/Q
-    ELSEIF(N.EQ.2) THEN
+    elseif(N.eq.2) then
        HYDREC=(X(A,I,4)+X(A,I,5))/Q
-    ELSEIF(N.EQ.3) THEN
+    elseif(N.eq.3) then
        HYDREC=X(A,I,6)/Q
-    ELSEIF(N .EQ. 4) THEN
+    elseif(N .eq. 4) then
        HYDREC=X(A,I,3)/Q          
-    ELSEIF(N .EQ. 5) THEN
+    elseif(N .eq. 5) then
        HYDREC=X(A,I,5)/Q
-    ELSE
-       STOP 'HYDREC: Bad parameter'
-    ENDIF
-    RETURN
+    else
+       stop 'HYDREC: Bad parameter'
+    endif
+    return
   end function HYDREC
   
 
@@ -3909,18 +3909,18 @@ end subroutine INITIALIZE_HEATING_POLY
     ! 
     ! called by CALC_HELIUM2
     !
-   IMPLICIT NONE
+   implicit none
     !
     !input
-    REAL   (dp )  :: T
-    INTEGER(i4b)  :: N
+    real   (dp )  :: T
+    integer(i4b)  :: N
     !local
-    INTEGER(i4b)  :: I,J
-    REAL   (dp )  :: Q,S,A,X
-    REAL   (dp ), DIMENSION(18,7) :: C
+    integer(i4b)  :: I,J
+    real   (dp )  :: Q,S,A,X
+    real   (dp ), dimension(18,7) :: C
 !===============================================================================
     !
-    DATA ((C(I,J),J=1,7),I=1,18)/ &
+    data ((C(I,J),J=1,7),I=1,18)/ &
          !        alpha_1       alpha_B       beta_1        beta_b         beta_ff        beta_b_tot
          1.0_dp, 1.569E-11_dp, 9.284E-11_dp, 1.569e-11_dp, 8.347E-11_dp,  1.061E-11_dp,  9.408e-11_dp,&
          1.2_dp, 1.569E-11_dp, 8.847E-11_dp, 1.569E-11_dp, 7.889E-11_dp,  1.068E-11_dp,  8.957e-11_dp,&
@@ -3946,58 +3946,59 @@ end subroutine INITIALIZE_HEATING_POLY
     X(A,I,J)=C(I,J)+A*(C(I+1,J)-C(I,J))
     !-------------------------------------------------------------------------
     !
-    Q=SQRT (T)
-    S=LOG10(T)
+    Q=sqrt (T)
+    S=log10(T)
     
     
-    IF(S .LT. 4.4_dp .AND. S.GT.1.0_dp) THEN
+    if(S .lt. 4.4_dp .and. S.gt.1.0_dp) then
        
-       DO I=1,17
-          IF(S.GE.C(I,1).AND.S.LE.C(I+1,1)) GOTO 1
-       END DO
-       STOP 'HELREC: Unexpected error'
-1      CONTINUE
+       do I=1,17
+          if(S.ge.C(I,1).and.S.le.C(I+1,1)) goto 1
+       end do
+       stop 'HELREC: Unexpected error'
+1      continue
        A=(S-C(I,1))/(C(I+1,1)-C(I,1))
        
        
-       IF    (N.EQ.1) THEN
+       if    (N.eq.1) then
           HELREC=(X(A,I,2)+X(A,I,3))/Q
-       ELSEIF(N.EQ.2) THEN
+       elseif(N.eq.2) then
           HELREC=(X(A,I,4)+X(A,I,5))/Q
-       ELSEIF(N.EQ.3) THEN
+       elseif(N.eq.3) then
           HELREC=X(A,I,6)/Q
-       ELSEIF(N .EQ. 4) THEN
+       elseif(N .eq. 4) then
           HELREC=X(A,I,3)/Q
-       ELSEIF(N .EQ. 5) THEN
+       elseif(N .eq. 5) then
           HELREC=X(A,I,5)/Q
-       ELSE
-          STOP 'HYDREC: Bad parameter'
-       ENDIF
-    ELSEIF (S .LE. 7 .and. S .gt. 1.0) THEN
-       IF    (N.EQ.1) THEN
+       else
+          stop 'HYDREC: Bad parameter'
+       endif
+    elseif (S .le. 7 .and. S .gt. 1.0) then
+       if    (N.eq.1) then
           HELREC=HYDREC(T,1)*((1.626E-11_dp+2.073E-11_dp)/&
                (1.499E-11_dp+1.847E-11_dp))
-       ELSEIF(N.EQ.2) THEN
+       elseif(N.eq.2) then
           HELREC=HYDREC(T,2)*((1.670E-11_dp+1.394E-11_dp)/&
                (1.374E-11_dp+1.103E-11_dp))
-       ELSEIF(N.EQ.3) THEN
+       elseif(N.eq.3) then
           HELREC=HYDREC(T,3)* 1.0_dp                              ! free-free ist the same
-       ELSEIF(N .EQ. 4) THEN
+       elseif(N .eq. 4) then
           HELREC=HYDREC(T,4)*(2.073_dp/1.847_dp)
-       ELSEIF(N .EQ. 5) THEN
+       elseif(N .eq. 5) then
           HELREC=HYDREC(T,5)*(1.369E-11_dp/1.103E-11_dp)
-       ELSE
-          STOP 'HELREC: Bad parameter'
-       ENDIF
-    ELSE
-       STOP 'HELREC: Temperature out of range'
-    ENDIF
+       else
+          stop 'HELREC: Bad parameter'
+       endif
+    else
+       stop 'HELREC: Temperature out of range'
+    endif
 !!$      iF (HELREC .lt. 1)&
 !!$           stop "mess with helrec, neagtive rates !!!"
-    RETURN
-!-------------------------------------------------------------------------
+    return
+!
   end function HELREC
-!------------------------------------------------------------------------------
+
+  
 
 !================================================================================
   subroutine EXPAND_SPACE

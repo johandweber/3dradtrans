@@ -852,7 +852,8 @@ subroutine CREATE_LOGFILE
     use M_definitions,      only:  external_hc_program
     implicit none
 !================================================================================
-    call EXECUTE_COMMAND_LINE(external_hc_program)
+   call SYSTEM (external_hc_program) !Legacy, for example first generation flang
+  ! call EXECUTE_COMMAND_LINE(external_hc_program) (corresponding to Fortran 2008)
   end subroutine CALL_EXTERNAL_HC_PROGRAM
 !
 end module M_output

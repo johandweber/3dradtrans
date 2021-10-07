@@ -238,7 +238,7 @@ contains
                      if((chi(x+coord_sign(1,c)*(ray_cells(e,r)%x-x_min),&
                          y+coord_sign(2,c)*(ray_cells(e,r)%y-y_min),&
                          z+coord_sign(3,c)*(ray_cells(e,r)%z-z_min),f)).ne.0) then
-                        !$OMP ATOMIC
+                        !OMP CRITICAL
                         j_nu(x+coord_sign(1,c)*(ray_cells(e,r)%x-x_min),&
                              y+coord_sign(2,c)*(ray_cells(e,r)%y-y_min),&
                              z+coord_sign(3,c)*(ray_cells(e,r)%z-z_min),f)=&
