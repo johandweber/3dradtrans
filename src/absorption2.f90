@@ -49,7 +49,9 @@ contains
 ! called by main program
 ! 
     use M_definitions,            only: num_sources, points, spherical_case_A,&
-                                        spherical_case_B
+                                        spherical_case_B, z_max,&
+                                        o_write_escape_fraction_full
+    use M_raysave,                only: escapefraction_full           
 !
    implicit none
    !
@@ -63,6 +65,11 @@ contains
 !   
       allocate(photons_freq_source1(1:num_sources, 1:points, 1:1),stat=errstat)
       if (errstat .ne. 0) stop 'error allocating photons_freq_source1'
+!
+      if (o_write_escape_fraction_full) then
+         allocate(escapefraction_full(0:0,0:0,-z_max:+z_max,0:points))
+      end if
+      
    else
       allocate(photons_freq_source(1:num_sources, 1:points, 1:8),stat=errstat)
       if (errstat .ne. 0) stop 'error allocating photons_freq_source'
@@ -630,34 +637,38 @@ contains
  subroutine GET_J_SPHERICAL_CASE_B
 !    Computes J for the spherically-symmetric case
 !
-   use M_definitions,           only: x_max, y_max, z_max, x_min, y_min, z_min,&
-                                      source_x, source_y, source_z,&
+   use M_definitions,           only: z_max,&
                                       c_correct_on, l_cell,&
-                                      num_sources, t_all, t_step,&
+                                      t_all, t_step,&
                                       start_activity, lifetime, num_threads,&
-                                      points, o_write_escape_fraction
+                                      points, o_write_escape_fraction,&
+                                      o_write_escape_fraction_full
    
    use M_natural_constants,     only: nc_pi, nc_light, nc_parsec
    use M_grid_memory,           only: j_nu, xj_abs, chi
-   use M_raysave,               only: escapefraction,totaltau, rays,&
-                                      ray_split, ray_cells, coord_sign,&
-                                      l_max
+   use M_raysave,               only: escapefraction,escapefraction_full,&
+                                      totaltau
 !
    implicit none
 !
-   integer(i4b) :: so,t,errstat,f,e,r,c
+   integer(i4b) :: so,t,errstat,f,e
    real(dp)     :: length_sum, length_calc
-   logical      :: exit_marker
 !
-   real(dp), dimension(0:points-1,1:8):: tau
+   real(dp), dimension(-z_max:+z_max, 0:points-1):: tau
    real(dp)    :: volume
 !================================================================================
 !
    j_nu=0._dp
    xj_abs=0._dp
    length_sum=0._dp
+   tau=0._dp
+
+   
+   
    if(allocated(escapefraction))&
         escapefraction=0._dp
+   if (allocated(escapefraction_full))&
+        escapefraction_full=0._dp   
 !   
    if ((t_all+t_step)/31557600._dp .lt. start_activity(1) .or.&
         (t_all+t_step)/31557600._dp .gt. start_activity(1)+lifetime(1)) return
@@ -669,13 +680,13 @@ contains
    allocate(absorbed_freq(0:points,1:1))
    if (errstat .ne. 0) stop 'error allocating absorbned_freq'
    do f=1,points-1
-      photons_freq(f,1)=photons_freq_source(1,f,1)                 
+      photons_freq(f,1)=photons_freq_source(1,f,1)
       do e = -z_max, +z_max
          length_sum=0
         if (c_correct_on) then
             length_sum=length_sum+l_cell*nc_parsec
             if (length_sum .gt. nc_light*&
-                 (t_all-start_activity(so))) then
+                 (t_all)) then
                exit
             else
                length_calc=l_cell*nc_parsec
@@ -684,15 +695,21 @@ contains
             length_sum=length_sum+l_cell*nc_parsec
             length_calc=l_cell*nc_parsec
          end if
-         tau(f,1)=chi(0,0,e,f)*length_calc
+         tau(e,f)=chi(0,0,e,f)*length_calc
+         !print*, "TAU",e, f, tau(e,f)
          if (o_write_escape_fraction)&
-              totaltau(1,1,f)=totaltau(1,1,f)+tau(f,e)
+              totaltau(1,1,f)=totaltau(1,1,f)+tau(e,f)
+
+         
+         if (o_write_escape_fraction_full)&
+              escapefraction_full(0,0,e,f) = exp(-sum(tau(-z_max:e,f )))
 !         
-         absorbed_freq(f,1)=photons_freq(f,1)*(1-exp(-tau(f,1)))
-         photons_freq(f,1)= photons_freq(f,1)*exp(-tau(f,1))
+         absorbed_freq(f,1)=photons_freq(f,1)*(1-exp(-tau(e,f)))
+         photons_freq(f,1)= photons_freq(f,1)*exp(-tau(e,f))
          if (chi(0,0,e,f) .ne. 0) then   !
             volume = (4._dp/3._dp)*nc_pi* (l_cell*nc_parsec)**3*&
                  ( (e+z_max+1)**3 - (e+z_max)**3 )
+            !print*, "VOLUME:", l_cell**3 *( (e+z_max+1)**3 - (e+z_max)**3 )
             j_nu(0,0,e,f)=&
                  j_nu(0,0,e,f)+&
                  absorbed_freq(f,1)/&
@@ -711,7 +728,7 @@ contains
               exp(-totaltau(0,0,f))
       end do
    end if              ! end of sources
-   
+
  end subroutine GET_J_SPHERICAL_CASE_B
 
 !============================================================================== 

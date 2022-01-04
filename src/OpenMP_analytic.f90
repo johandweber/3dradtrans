@@ -79,7 +79,7 @@ PROGRAM RADTRANS_3D
   use M_raysave               , ONLY: allocate_rays
   use M_grid_memory           , ONLY: allocate_grid, mask, NHeI, nHeII, nHeIII,&
                                       nHe_complete, j_nu
-  use M_geometry              , ONLY: init_geometry
+  use M_geometry              , ONLY: init_geometry, init_volume
   use M_absorption            , ONLY: set_ray_directions,&
                                       allocate_photon_arrays, photon_zero,&
                                       get_j, get_j_periodic,&
@@ -140,6 +140,10 @@ PROGRAM RADTRANS_3D
      call set_ray_directions
   endif
 !
+  if ( spherical_case_A .or. spherical_case_B) then
+     call init_volume
+  endif
+  
   call initialize_abundances
 !  
   if (read_from_file) then
@@ -255,13 +259,8 @@ PROGRAM RADTRANS_3D
      end if
 
 !
-     if (verbose_stdout) then
-! Curtrently output of relative number densities and 
-! weighted temperatured does not work in the spherical case
-! Has to be added in the future !   
-        if ((.not. spherical_case_A) .and. (.not. spherical_case_B))&       
-             call log_iteration_step
-        write(*,*) "log_iteration_step"
+     if (verbose_stdout) then 
+        call log_iteration_step
      end if
 !
      call cpu_time(progcputime)

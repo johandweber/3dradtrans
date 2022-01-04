@@ -32,11 +32,13 @@ module M_output
                                   extra_heating, extra_radiation_field,&
                                   o_thermal_pressure,&
                                   x_max, y_max, z_max, t_step,&
-                                  o_write_escape_fraction, num_sources, points,&
+                                  o_write_escape_fraction,&
+                                  o_write_escape_fraction_full,&
+                                  num_sources, points,&
                                   include_He, include_C, include_N, include_O,&
                                   include_Ne, include_S, include_Ar,&
                                   Heions, Cions, Nions, Oions, Neions,&
-                                  Sions, Arions
+                                  Sions, Arions, spherical_case_B, l_cell
    use M_data_input,        only: nug, nug_spect
    use M_grid_memory,       only: nHI, nHeI, nH_complete,&
                                   nHeI, nHeII, nHeIII, nHe_complete,&
@@ -46,13 +48,13 @@ module M_output
                                   energycontent, thermal_pressure,&
                                   cool_He, cool_C, cool_N, cool_O, cool_Ne,&
                                   cool_S, cool_Ar, cool_ff
-   use M_raysave,           only: escapefraction 
+   use M_raysave,           only: escapefraction, escapefraction_full 
    use M_hydrogen,          only: rep
 ! 
     implicit none
 !
     integer(i4b)        :: file_counter=1000
-    integer(i4b)        :: x, y, z, m=0, f, s
+    integer(i4b)        :: x, y, z, m=0, f, s, e
     character (len=3000):: string
     character (len=3000):: prefix_string
     character (len=4)   :: file_counter_string
@@ -273,6 +275,22 @@ module M_output
         end do
         close(120)
      end if
+
+     if (o_write_escape_fraction_full .and. spherical_case_B) then
+        open(121,file=adjustr(trim(adjustl(prefix_string)))//'.escape_full.txt')
+        do e= -z_max, +z_max-1
+           write(121,*) '# radius in pc :', ((e+1+z_max)*l_cell)
+           do f=1, points-1
+              write(121,*) 1e+8*nc_light/nug(f), escapefraction_full (0,0,e,f)
+           end do
+           write(121,*)
+           write(121,*)
+        end do
+        close(121)
+     end if
+     
+
+     
   end if
 
 contains
@@ -723,14 +741,16 @@ subroutine CREATE_LOGFILE
 !
 !  called by the main program
 !    
-    use M_definitions,       only: include_metals,&
+    use M_definitions,       only: spherical_case_A, spherical_case_B,&
+                                   include_metals,&
                                    Heions, Cions, Nions, Oions, Neions,&
-                                   Sions, Arions
+                                   Sions, Arions,&
+                                   z_max
                                    
     use M_grid_memory,       only: nHI, nHII, nHeI, nH_complete,&
                                    nHeI, nHeII, nHeIII, nHe_complete,&
                                    nC, nN, nO, nNe, nS,nAr,&
-                                   temperature, ne
+                                   temperature, ne, volume
 !
     implicit none
     integer(i4b)    :: counter
@@ -745,43 +765,110 @@ subroutine CREATE_LOGFILE
     if (max (Heions,Cions,Nions, Oions, Neions, Sions, Arions) .eq. 5)& 
          write(*,"(A10,A8,A8,A8,A8,A8)") "Element", "I","II", "III", "IV","V"
 !
-    write(*,log_formatstring(2))&
-         "H",&    
-         100._dp*sum(nHI )/sum(nH_complete),&
-         100._dp*sum(nHII)/sum(nH_complete)
-   write(*,log_formatstring(Heions))&
-        "He",&    
-        100_dp*sum(nHeI)/sum(nHe_complete),&
-        100_dp*sum(nHeII)/sum(nHe_complete),&
-        100_dp*sum(nHeIII)/sum(nHe_complete)
+    if (spherical_case_A .or. spherical_case_B) then
+       write(*,log_formatstring(2))&
+            "H",&    
+            100._dp*spherical_fraction(nHI  , nH_complete, volume),&
+            100._dp*spherical_fraction(nHII , nH_complete, volume)
+       write(*,log_formatstring(Heions))&
+            "He",&    
+            100_dp*spherical_fraction(nHeI  , nHe_complete, volume),&
+            100_dp*spherical_fraction(nHeII , nHe_complete, volume),&
+            100_dp*spherical_fraction(nHeIII, nHe_complete, volume)
+
+       if (include_metals) then
+          write(*,log_formatstring(Cions))& 
+               "C",&
+               (100_dp*spherical_fraction(nC(:,:,:,counter),nC(:,:,:,0),&
+                volume), counter =1, nions)
+!             
+          write(*,log_formatstring(Cions))& 
+               "N",&
+               (100_dp*spherical_fraction(nN(:,:,:,counter),nN(:,:,:,0),&
+                volume), counter = 1, nions)
 !
-   if (include_metals) then
-      write(*,log_formatstring(Cions))& 
-           "C",&
-           (100_dp*sum(nC(:,:,:,counter))/sum(nC(:,:,:,0)), counter=1,Cions)
-      write(*,log_formatstring(Nions))&
-           "N",&
-           (100_dp*sum(nN(:,:,:,counter))/sum(nN(:,:,:,0)), counter=1,Nions)
-      write(*,log_formatstring(Oions))&
-           "O",&
-           (100_dp*sum(nO(:,:,:,counter))/sum(nO(:,:,:,0)), counter=1,Oions)
-      write(*,log_formatstring(Neions))&
-           "Ne",&
-           (100_dp*sum(nNe(:,:,:,counter))/sum(nNe(:,:,:,0)), counter=1,Neions)
-      write(*,log_formatstring(Sions))&
-           "S",&
-           (100_dp*sum(nS(:,:,:,counter))/sum(nS(:,:,:,0)), counter=1,Sions)
-      write(*,log_formatstring(Arions))&
-           "Ar",&
-           (100_dp*sum(nAr(:,:,:,counter))/sum(nAr(:,:,:,0)), counter=1,Arions)
-   end if
+          write(*,log_formatstring(Cions))& 
+               "O",&
+               (100_dp*spherical_fraction(nO(:,:,:,counter),nO(:,:,:,0),&
+                volume), counter=1, nions)
+!             
+          write(*,log_formatstring(Neions))&
+               "Ne",&
+               (100_dp*spherical_fraction(nNe(:,:,:,counter),nNe(:,:,:,0),&
+                volume), counter=1, nions)
+!             
+          write(*,log_formatstring(Sions))&
+               "S",&
+               (100_dp*spherical_fraction(nS(:,:,:,counter),nS(:,:,:,0),&
+                volume), counter=1, nions)
+!             
+          write(*,log_formatstring(Arions))&
+               "Ar",&
+               (100_dp*spherical_fraction(nAr(:,:,:,counter),nAr(:,:,:,0),&
+                volume), counter=1, nions)
+       end if
+       
+!
+    else
+!
+       write(*,log_formatstring(2))&
+            "H",&    
+            100._dp*sum(nHI )/sum(nH_complete),&
+            100._dp*sum(nHII)/sum(nH_complete)
+!
+       write(*,log_formatstring(Heions))&
+            "He",&    
+            100_dp*sum(nHeI)/sum(nHe_complete),&
+            100_dp*sum(nHeII)/sum(nHe_complete),&
+            100_dp*sum(nHeIII)/sum(nHe_complete)
+!
+       if (include_metals) then
+          write(*,log_formatstring(Cions))& 
+               "C",&
+               (100_dp*sum(nC(:,:,:,counter))/sum(nC(:,:,:,0)),&
+               counter=1,Cions)
+!             
+          write(*,log_formatstring(Nions))&
+               "N",&
+               (100_dp*sum(nN(:,:,:,counter))/sum(nN(:,:,:,0)),&
+               counter=1,Nions)
+!
+          write(*,log_formatstring(Oions))&
+               "O",&
+               (100_dp*sum(nO(:,:,:,counter))/sum(nO(:,:,:,0)),&
+               counter=1,Oions)
+!             
+          write(*,log_formatstring(Neions))&
+               "Ne",&
+               (100_dp*sum(nNe(:,:,:,counter))/sum(nNe(:,:,:,0)),&
+               counter=1,Neions)
+!             
+          write(*,log_formatstring(Sions))&
+               "S",&
+               (100_dp*sum(nS(:,:,:,counter))/sum(nS(:,:,:,0)),&
+               counter=1,Sions)
+!             
+          write(*,log_formatstring(Arions))&
+               "Ar",&
+               (100_dp*sum(nAr(:,:,:,counter))/sum(nAr(:,:,:,0)),&
+               counter=1,Arions)
+       end if
+    end if
 !
    write(*,*)
    write(*,*) "Maximal gas Temperature in K:", maxval(temperature)
-   write(*,*) "Minimal gas temperature in K:", minval(temperature)
-   write(*,*) "Temperature of the gas, weighted by the square of the electron"
-   write(*,*) "number density:", sum (ne**2*temperature)/sum(ne**2)
-   write(*,*)
+   write(*,*) "Minimal gas temperature in K:", minval(temperature)   
+   !
+   if (spherical_case_A .or. spherical_case_B) then
+      write(*,*) "Temperature of the gas, weighted by the square of the electron"
+      write(*,*) "number density:", spherical_weighted_temp(temperature, ne,&
+                                                            volume)
+      write(*,*)      
+   else
+      write(*,*) "Temperature of the gas, weighted by the square of the electron"
+      write(*,*) "number density:", sum (ne**2*temperature)/sum(ne**2)
+      write(*,*)
+   endif
 !
  contains
 !
@@ -801,6 +888,54 @@ subroutine CREATE_LOGFILE
      end select
     
    end function log_formatstring
+
+   real(dp) function spherical_fraction (array_ion, array_total, volume)
+     ! used for the the arrays to describe the global abundances
+     ! for the spherical case
+     implicit none
+     real(dp), dimension (0:0,0:0, -z_max:z_max) :: array_ion, array_total
+     real(dp), dimension (-z_max:+z_max)         :: volume
+     real(dp)                                    :: ion_in_volume, total_in_volume
+     integer                                     :: volume_counter
+
+     ion_in_volume = 0._dp
+     total_in_volume = 0._dp
+
+     do volume_counter  = -z_max,+z_max
+        ion_in_volume   = ion_in_volume + &
+                          array_ion(0,0,volume_counter)  * volume(volume_counter)
+        
+        total_in_volume = total_in_volume + &
+                          array_total(0,0,volume_counter)* volume(volume_counter)
+     end do
+     
+     spherical_fraction = ion_in_volume / total_in_volume
+     
+   end function spherical_fraction
+
+   real(dp) function spherical_weighted_temp (temp_array, e_array, volume)
+     ! computes the mean temperature weighted by the square of the electron
+     ! density 
+
+     real(dp), dimension (0:0,0:0, -z_max: +z_max) :: temp_array, e_array
+     real(dp), dimension(-z_max:+z_max) :: volume
+     real(dp) :: e_squared_sum, temp_e_squared_sum
+     integer:: counter
+
+     e_squared_sum=0._dp
+     temp_e_squared_sum =0
+
+     do counter = -z_max,+z_max
+        e_squared_sum = e_squared_sum + e_array(0,0,counter)**2 * volume(counter)
+        temp_e_squared_sum = temp_e_squared_sum + &
+                             temp_array(0,0,counter) * e_array(0,0,counter)**2 *&
+                             volume(counter)
+     enddo
+!
+     spherical_weighted_temp = temp_e_squared_sum / e_squared_sum
+!     
+   end function spherical_weighted_temp
+     
  end subroutine LOG_ITERATION_STEP
 
 

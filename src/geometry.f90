@@ -34,6 +34,8 @@ module M_raysave
 !  
   real(dp), dimension (:,:), allocatable   :: escapefraction
 !
+  real(dp), dimension (:,:,:,:), allocatable :: escapefraction_full 
+!
 ! cells per ray (possibly not necessary)
   integer, dimension(:), allocatable       :: ray_number_of_cells   
 !
@@ -60,6 +62,7 @@ module M_raysave
 !
       use M_natural_constants ,only: nc_pi
       use M_definitions       ,only: f_a, num_sources, o_write_escape_fraction,&
+                                     o_write_escape_fraction_full, spherical_case_B,&
                                      points, x_max, y_max, z_max
 !   
     implicit none
@@ -84,7 +87,7 @@ module M_raysave
 !      
       if (o_write_escape_fraction) then
          allocate(totaltau(0:12*4**l_max/6,1:8,0:points))
-         allocate(escapefraction(1:num_sources,0:points))
+         allocate(escapefraction(1:num_sources,0:points)) 
       end if
 !            
       write(*,*) '# l_max:', l_max
@@ -186,7 +189,9 @@ module M_grid_memory
   real( dp)   , dimension (:,:,:,:)  , allocatable :: add_heating_values,&
                                                       add_heating_poly
 
-!
+
+  real(dp)  , dimension (:), allocatable           :: volume         
+ !
 
   contains
 !
@@ -242,6 +247,8 @@ module M_grid_memory
            1:diffuse_random_rays), stat=errstat)
       allocate (energycontent(-x_max:+x_max,-y_max:+y_max,-z_max:+z_max),&
            stat=errstat)
+      allocate (volume(-z_max:+z_max))
+      
 !
       if (errstat .ne. 0) stop "error allocating basic files"
 !               
@@ -605,6 +612,28 @@ module M_geometry
     end do
   end subroutine INIT_GEOMETRY 
 
+  
+!================================================================================
+  subroutine INIT_VOLUME
+    !
+    !     Computes the volumes of the spherical shells
+    !
+    ! called by main progran
+    !
+    use M_natural_constants, only: nc_pi, nc_parsec
+    use M_definitions,       only: l_cell, z_max
+    use M_grid_memory,       only: volume
+
+    integer:: volume_counter
+!================================================================================
+    
+    do volume_counter = -z_max, +z_max-1
+       volume(volume_counter) = 4._dp/3._dp * nc_pi*&
+            ( (volume_counter+z_max+1) **3 -(volume_counter+z_max)**3)*&
+            nc_parsec**3
+    end do
+       
+  end subroutine INIT_VOLUME
 
 
 !===============================================================================

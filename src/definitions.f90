@@ -165,6 +165,7 @@ logical             :: optabu_3d                    = .false.
 logical             :: o_rad_force                  = .false.
 logical             :: o_thermal_pressure           = .false.
 logical             :: o_write_escape_fraction      = .false.
+logical             :: o_write_escape_fraction_full = .false.
 logical             :: outward_only                 = .false.
 logical             :: periodic                     = .false.
 logical             :: photoheat_metals             = .false.
@@ -402,8 +403,8 @@ namelist/input_values/&
      log_heating_cooling,lower_energy_limit,mergespec,mask_filename,&
      Neions, Netosolar,NetoH,nH_complete_scalar,nHI_fraction,no_source_filename,&
      Nions, Ntosolar,NtoH,num_threads,o_abundan,o_external, o_rad_force,&
-     o_thermal_pressure,o_write_escape_fraction,old_solar_abundances,&
-     omega_m,optabu_3d, Oions, Otosolar,OtoH, outward_only,& 
+     o_thermal_pressure,o_write_escape_fraction, o_write_escape_fraction_full,&
+     old_solar_abundances, omega_m,optabu_3d, Oions, Otosolar,OtoH, outward_only,& 
      periodic,photoheat_metals, planar_case_A, planar_case_B,&
      read_from_file, rep_output,&
      rp_max, start_ionized,Sions,source_filename,&
